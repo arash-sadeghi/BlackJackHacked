@@ -46,6 +46,8 @@ class Dealer:
         
         elif action == 'stay':
             return self.play() #! return result of dealer play
+        else:
+            raise NameError("[-] invalid decision")
 
 
 
@@ -65,7 +67,7 @@ class Dealer:
             self.dealerHand.extend(newCard) #! put new card in dealerHand
             dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
-        if dealerSum == 21:
+        if dealerSum == 21: #! smart : if 21 is on first two cards, then its surely blackjack
             return -1 #! dealer blackjack
         
         elif dealerSum >= 17: 
