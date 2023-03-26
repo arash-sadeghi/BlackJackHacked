@@ -1,15 +1,16 @@
 import random
 class Dealer:
-    def __init__(self,deck=8):
+    def __init__(self,points,deck=8):
         self.deck = deck
         self.cards = self.createCard() 
-        self.points = {'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
+        self.points = points
         random.seed(100) #! DEBUG
         self.shuffleCards()
         self.yellowPos = len(self.cards) // 2 #! approximate
         self.dealtCards = []
         self.playerHand = []
         self.dealerHand = []
+        self.shoeChange = False
         
     
     
@@ -23,10 +24,16 @@ class Dealer:
     def shuffleCards(self):
         random.shuffle(self.cards)
 
-    def deal(self):
-        chosenCards = self.cards[0:4] #! select four cards
-        self.cards = self.cards[4:] #! delete those cards from availble cards
+    def giveCards(self,num):
+        chosenCards = self.cards[0:num] #! select four cards
+        self.cards = self.cards[num:] #! delete those cards from availble cards
         self.dealtCards.extend(chosenCards) #! add chosen cards to dealt cards
+        if len(self.cards) <= self.yellowPos:
+            self.shoeChange = True
+        return chosenCards
+
+    def deal(self):
+        chosenCards = self.giveCards(4)
         self.playerHand.extend(chosenCards[0:2])
         self.dealerHand.extend(chosenCards[2:4])
         return [self.dealerHand[0] , self.playerHand[0] , self.playerHand[1]] #! this return is mainly for player 
@@ -54,8 +61,7 @@ class Dealer:
 
 
     def hit(self):
-        newCard= self.cards.pop(0) #! select new card
-        self.dealtCards.append(newCard) #! add new card to dealt card
+        newCard= self.giveCards(1)[0] #! select new card
         self.playerHand.append(newCard) #! put new card in playerHand
     
     
@@ -64,8 +70,7 @@ class Dealer:
         dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
         while dealerSum < 17: #! dealer needs to play
-            newCard= self.cards.pop(0) #! select new card
-            self.dealtCards.append(newCard) #! add new card to dealt card
+            newCard= self.giveCards(1)[0] #! select new card
             self.dealerHand.append(newCard) #! put new card in dealerHand
             dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
