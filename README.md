@@ -1,3 +1,3 @@
 # TODO
-- [] implement soft A
-- [] implement split and double
+-[] implement soft A
+-[] implement split and double

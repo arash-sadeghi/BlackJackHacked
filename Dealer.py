@@ -35,7 +35,13 @@ class Dealer:
     def deal(self):
         chosenCards = self.giveCards(4)
         self.playerHand.extend(chosenCards[0:2])
+        if self.playerHand[0] == 'A' and self.playerHand[1] == 'A':
+            self.playerHand[1] == 'As'
+
         self.dealerHand.extend(chosenCards[2:4])
+        if self.dealerHand[0] == 'A' and self.dealerHand[1] == 'A':
+            self.dealerHand[1] == 'As'
+
         return [self.dealerHand[0] , self.playerHand[0] , self.playerHand[1]] #! this return is mainly for player 
     
     def checkPlayerBJ(self):
@@ -44,14 +50,34 @@ class Dealer:
         else: 
             return 0 #! player not blackjack
 
+    def checkBust(self,hand):
+        HandSum = sum([self.points[_] for _ in hand])
+        if 'A' in hand:
+            if HandSum > 21 and HandSum-10 <= 21:
+                return 0 #! soft hand and not busted and A is 1 after this
+            elif HandSum > 21 and HandSum-10 > 21:
+                return 1 #! soft hand and busted
+            elif HandSum <= 21:
+                return -1 #! soft hand and not busted
+
+        elif HandSum > 21: 
+            return 1 #! busted
+        else:
+            return -1 #! not busted
+
+
     def takeAction(self,action): #! 'playerLost' 'handInProgress' 'playerWon' 'push'
         if action == 'hit':
             self.hit()
-            playerHandSum = sum([self.points[_] for _ in self.playerHand])
-            if playerHandSum > 21:
+            bustRes = self.checkBust(self.playerHand)
+            if bustRes == 1:
                 return 'playerLost' #! palyer busted
-            else:
+            elif bustRes == -1:
                 return 'handInProgress' #! hand is still going
+            elif bustRes == 0: #! ace is 1 after this
+                self.playerHand[ self.playerHand.index('A') ] = 'As' #! Ace is by default considered 11. this solves the fact that player should take the maximum from players hand in soft hands
+                return 'handInProgress' #! hand is still going
+
         
         elif action == 'stay':
             return self.play() #! return result of dealer play
@@ -71,6 +97,11 @@ class Dealer:
 
         while dealerSum < 17: #! dealer needs to play
             newCard= self.giveCards(1)[0] #! select new card
+            if 'A' in self.dealerHand:
+                if newCard == 'A': #! 2 aces would definitly bust dealer, so it should count soft
+                    newCard = 'As'
+                elif dealerSum + self.points[newCard]> 21: #! new card is busting the hand, ace should become 1
+                    self.dealerHand[self.dealerHand.index('A')] = 'As'
             self.dealerHand.append(newCard) #! put new card in dealerHand
             dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
