@@ -20,8 +20,8 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 100
-
+    numberOfGames = 10000
+    startTime = time()
     for gameIt in range(1,numberOfGames+1): #! just to avoid game number 0
 
         if dealer.shoeChange:
@@ -76,4 +76,4 @@ if __name__ == '__main__':
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}" , 'magenta' , attrs=["bold"])
 
 
-    print2("hi")
+    print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")

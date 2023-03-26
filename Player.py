@@ -7,14 +7,35 @@ class Player:
         self.hardTable = np.zeros((21-2+1, 11-2+1 , 2 , 3)) 
         self.fileName = logName
 
-    def decide(self,cards):
+    def interact(self):
         key = input('[player] decide >>> ')
         if key == 'h':
             return 'hit'
         elif key == 's':
             return 'stay'
 
-        pass
+    def arashCoded(self,cards):
+        dealerCard = cards[0]
+        dealerCardValue = self.points[cards[0]]
+        playerCards = cards[1:]
+        playerCardsSum = sum([self.points[_] for _ in playerCards])
+
+        if playerCardsSum >= 17:
+            return 'stay'
+        elif playerCardsSum<=11:
+            return 'hit'
+        elif dealerCardValue >= 7:
+            return 'stay'
+        elif dealerCardValue < 7:
+            return 'hit'
+
+
+
+
+    def decide(self,cards):
+        # return self.interact()
+        return self.arashCoded(cards)
+
     def record(self,cardsOnTable , decision , result):
         dealerCard = cardsOnTable[0]
         dealerCardValue = self.points[dealerCard]
