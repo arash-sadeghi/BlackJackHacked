@@ -1,15 +1,17 @@
 import random
-
 class Dealer:
     def __init__(self,deck=8):
         self.deck = deck
         self.cards = self.createCard() 
         self.points = {'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
+        random.seed(100) #! DEBUG
         self.shuffleCards()
         self.yellowPos = len(self.cards) // 2 #! approximate
         self.dealtCards = []
         self.playerHand = []
         self.dealerHand = []
+        
+    
     
     def createCard(self):
         oneDeck = [str(_) for _ in range(2,11)] #! 2 to 10
@@ -35,12 +37,12 @@ class Dealer:
         else: 
             return 0 #! player not blackjack
 
-    def takeAction(self,action):
+    def takeAction(self,action): #! 'playerLost' 'handInProgress' 'playerWon' 'push'
         if action == 'hit':
             self.hit()
             playerHandSum = sum([self.points[_] for _ in self.playerHand])
             if playerHandSum > 21:
-                return 'playerBust' #! palyer busted
+                return 'playerLost' #! palyer busted
             else:
                 return 'handInProgress' #! hand is still going
         
@@ -53,8 +55,8 @@ class Dealer:
 
     def hit(self):
         newCard= self.cards.pop(0) #! select new card
-        self.dealtCards.extend(newCard) #! add new card to dealt card
-        self.playerHand.extend(newCard) #! put new card in playerHand
+        self.dealtCards.append(newCard) #! add new card to dealt card
+        self.playerHand.append(newCard) #! put new card in playerHand
     
     
     def play(self): #! 0 push 1 player win -1 player lost
@@ -63,12 +65,15 @@ class Dealer:
 
         while dealerSum < 17: #! dealer needs to play
             newCard= self.cards.pop(0) #! select new card
-            self.dealtCards.extend(newCard) #! add new card to dealt card
-            self.dealerHand.extend(newCard) #! put new card in dealerHand
+            self.dealtCards.append(newCard) #! add new card to dealt card
+            self.dealerHand.append(newCard) #! put new card in dealerHand
             dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
-        if dealerSum == 21: #! smart : if 21 is on first two cards, then its surely blackjack
-            return -1 #! dealer blackjack
+        if dealerSum > 21:
+            return 'playerWon' #! dealer busted
+
+        elif dealerSum == 21: #! smart : if 21 is on first two cards, then its surely blackjack
+            return 'playerLost' #! dealer blackjack
         
         elif dealerSum >= 17: 
             if dealerSum > playerSum:
