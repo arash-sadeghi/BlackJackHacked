@@ -11,7 +11,7 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'randomPlayer'
+    comment = 'optimalTable'
     logName += comment
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
