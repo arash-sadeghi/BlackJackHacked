@@ -3,8 +3,8 @@ import random
 class Player:
     def __init__(self,points,logName):
         self.points = points
-        self.softTable = np.zeros((21-2+1, 11-2+1 , 2 , 3)) #! sums * dealer card * hit/stay * win/loss/push
-        self.hardTable = np.zeros((21-2+1, 11-2+1 , 2 , 3)) 
+        self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * hit/stay/double * win/loss/push
+        self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
         self.fileName = logName
         
         #! hard table
@@ -130,17 +130,22 @@ class Player:
             rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1]
             rowIndex = self.points[rowIndex]
             action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
-            if action == 1 or action == 2 or action == 3:
+            if action == 1:
                 return 'hit'
             elif action == 0:
                 return 'stay'
+            elif action == 2 or action == 3:
+                return 'double'
+
 
         else:
             action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
-            if action == 1 or action == 2:
+            if action == 1:
                 return 'hit'
             elif action == 0:
                 return 'stay'
+            elif action == 2:
+                return 'double'
 
 
     def arashCoded(self,cards):
@@ -180,11 +185,18 @@ class Player:
         if playerCardsSum > 21 and 'A' in playerCards:
             playerCards[playerCards.index('A')] = 'As'
             playerCardsSum -= 10
+
+        if decision == 'hit':
+            actionIndex = 0 
+        elif decision == 'stay':
+            actionIndex = 1 
+        elif decision == 'double':
+            actionIndex = 2 
+
         if 'A' in playerCards:
-            actionIndex = 0 if decision == 'hit' else 1
-            if result == 'playerWon':
+            if 'playerWon' in result:
                 resultIndex = 0 
-            elif result == 'playerLost':
+            elif 'playerLost' in result:
                 resultIndex = 1 
             elif result == 'push':
                 resultIndex = 2
@@ -194,10 +206,9 @@ class Player:
             self.softTable[playerCardsSum-2][dealerCardValue-2][actionIndex][resultIndex] += 1 
 
         else: 
-            actionIndex = 0 if decision == 'hit' else 1
-            if result == 'playerWon':
+            if 'playerWon' in result: #! considering double
                 resultIndex = 0 
-            elif result == 'playerLost':
+            elif 'playerLost' in result: #! considering double
                 resultIndex = 1 
             elif result == 'push':
                 resultIndex = 2

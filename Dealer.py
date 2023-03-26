@@ -81,6 +81,23 @@ class Dealer:
         
         elif action == 'stay':
             return self.play() #! return result of dealer play
+
+        elif action == 'double':
+            self.hit()
+            bustRes = self.checkBust(self.playerHand)
+            if bustRes == 1:
+                return 'playerLostDouble' #! palyer busted
+            elif bustRes == 0: #! ace is 1 after this
+                self.playerHand[ self.playerHand.index('A') ] = 'As' #! Ace is by default considered 11. this solves the fact that player should take the maximum from players hand in soft hands
+            
+            dealerRes = self.play() #! return result of dealer play
+            if dealerRes == "playerWon":
+                return "playerWonDouble"
+            elif dealerRes == "playerLost":            
+                return "playerLostDouble"
+            elif dealerRes == "push":            
+                return "push"
+
         else:
             raise NameError("[-] invalid decision")
 

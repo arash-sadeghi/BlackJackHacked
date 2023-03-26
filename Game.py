@@ -13,7 +13,7 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'optimalTable'
+    comment = 'optimalTableWdouble'
     logName += comment
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -79,11 +79,22 @@ if __name__ == '__main__':
             color = "red"
             losses += 1 
             money -= bet
-        
+
+        if result == 'playerLostDouble': 
+            color = "red"
+            losses += 1 
+            money -= 2*bet
+
+
         if result == 'playerWon': 
             color = "green"
             wins += 1
             money += bet
+
+        if result == 'playerWonDouble': 
+            color = "green"
+            wins += 1
+            money += 2*bet
 
         if result == 'push': 
             color = "yellow"
