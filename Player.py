@@ -111,6 +111,12 @@ class Player:
         else:
             return 'stay'
 
+    def alwaysHit(self):
+        return 'hit'
+
+    def alwaysStay(self):
+        return 'stay'
+
     def optimalTable(self,cards):
         dealerCardValue = self.points[cards[0]]
         playerCards = cards[1:]
@@ -161,6 +167,9 @@ class Player:
         # return self.arashCoded(cards)
         # return self.randomPlayer()
         return self.optimalTable(cards)
+        # return self.alwaysHit()
+        # return self.alwaysStay()
+
 
 
     def record(self,cardsOnTable , decision , result):

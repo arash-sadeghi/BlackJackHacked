@@ -5,6 +5,8 @@ import logging
 from time import ctime , time
 import os
 import numpy as np
+import pickle
+
 def print2(inp,color='white',attrs=[]):
     # print(colored(inp,color,attrs=attrs))
     logging.info(inp)
@@ -25,6 +27,9 @@ if __name__ == '__main__':
     losses = 0
     pushes = 0
     numberOfGames = 100000
+    money = 100000
+    initialMoney = money
+    bet = 10
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
@@ -45,6 +50,7 @@ if __name__ == '__main__':
         if dealer.checkPlayerBJ() == 1:
             print2("[game] Player BlackJack",'green')
             wins += 1
+            money += bet * 3/2
             dealer.endHand() #! no result is given for player since it was pure luck of player
             continue
 
@@ -72,29 +78,38 @@ if __name__ == '__main__':
         if result == 'playerLost': 
             color = "red"
             losses += 1 
+            money -= bet
+        
         if result == 'playerWon': 
             color = "green"
             wins += 1
+            money += bet
+
         if result == 'push': 
             color = "yellow"
             pushes += 1
 
         print2(f"[game] {result}",color)
-        print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}" , 'magenta' , attrs=["bold"])
+        print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}" , 'magenta' , attrs=["bold"])
 
-        if gameIt%500 == 0: print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}",end="\r")
+        if gameIt%500 == 0: print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
 
         winPercentages.append(round(wins/gameIt*100,2))
         lossPercentages.append(round(losses/gameIt*100,2))
         pushPercentages.append(round(pushes/gameIt*100,2))
 
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
+    print(f"Time Passed {time() - startTime} s for {numberOfGames} games")
 
     with open(logName+"Results.txt","w") as f:
-        f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}")
+        f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
     
     np.save(logName+"Winpers.npy" , np.array(winPercentages))
     np.save(logName+"Losspers.npy" , np.array(lossPercentages))
     np.save(logName+"Pushpers.npy" , np.array(pushPercentages))
+    with open(logName+"Dealer.pickle", "wb") as f:
+        pickle.dump(dealer, f)
+    with open(logName+"Player.pickle", "wb") as f:
+        pickle.dump(player, f)
 
     print("files saved! goodbye")
