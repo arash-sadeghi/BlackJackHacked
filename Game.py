@@ -4,13 +4,17 @@ from termcolor import colored
 import logging
 from time import ctime , time
 import os
+import numpy as np
 def print2(inp,color='white',attrs=[]):
-    print(colored(inp,color,attrs=attrs))
+    # print(colored(inp,color,attrs=attrs))
     logging.info(inp)
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    dir = 'logs'
+    comment = 'randomPlayer'
+    logName += comment
+    dir = os.path.join('logs',logName)
+    os.mkdir(dir)
     logName = os.path.join(dir,logName)
     logging.basicConfig(filename=logName+'.log', level=logging.DEBUG)
 
@@ -20,7 +24,10 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 10000
+    numberOfGames = 100000
+    winPercentages = []
+    lossPercentages = []
+    pushPercentages = []
     startTime = time()
     for gameIt in range(1,numberOfGames+1): #! just to avoid game number 0
 
@@ -75,5 +82,19 @@ if __name__ == '__main__':
         print2(f"[game] {result}",color)
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}" , 'magenta' , attrs=["bold"])
 
+        if gameIt%500 == 0: print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}",end="\r")
+
+        winPercentages.append(round(wins/gameIt*100,2))
+        lossPercentages.append(round(losses/gameIt*100,2))
+        pushPercentages.append(round(pushes/gameIt*100,2))
 
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
+
+    with open(logName+"Results.txt","w") as f:
+        f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)}")
+    
+    np.save(logName+"Winpers.npy" , np.array(winPercentages))
+    np.save(logName+"Losspers.npy" , np.array(lossPercentages))
+    np.save(logName+"Pushpers.npy" , np.array(pushPercentages))
+
+    print("files saved! goodbye")

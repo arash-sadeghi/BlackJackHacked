@@ -4,7 +4,7 @@ class Dealer:
         self.deck = deck
         self.cards = self.createCard() 
         self.points = points
-        random.seed(100) #! DEBUG
+        # random.seed(100) #! DEBUG
         self.shuffleCards()
         self.yellowPos = len(self.cards) // 2 #! approximate
         self.dealtCards = []
