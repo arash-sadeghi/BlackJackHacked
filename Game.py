@@ -54,11 +54,8 @@ if __name__ == '__main__':
             money += bet * 3/2
             dealer.endHand() #! no result is given for player since it was pure luck of player
             continue
-
-        decision = player.decide(cardsOnTable)
-        print2(f'[game] decision {decision}')
-        
-        result = dealer.takeAction(decision)
+        gameTrack = []
+        result = 'handInProgress'       
         while result == 'handInProgress':
             print2("[game] handInProgress")
             cardsOnTable = [dealer.dealerHand[0]]
@@ -66,8 +63,9 @@ if __name__ == '__main__':
             print2(f'[game] dealer hand {cardsOnTable[0]} ','cyan',attrs=['bold'])
             print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
             decision = player.decide(cardsOnTable)
+            print2(f'[game] decision {decision}')
             result = dealer.takeAction(decision)
-
+            gameTrack.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
 
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
