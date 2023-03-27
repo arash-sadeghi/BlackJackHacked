@@ -1,3 +1,15 @@
+# Problems:
+
+- blackjack game is not properly implemented. in this implementation dealer should stand on 18. this is why monte carlo tends to stand more. because of this dealer is busting frequently.
+
+- push on 21 is not implemented. just because pkayer hits 21 without blackjack doesnt mean he wins. push can happen.
+
+- because of problematic implementation of the game, MC stays alot and dealer busts itself.
+
+- after proper implementation, win percentage goes down
+
+
+
 # Blackjack AI
 
 In this personal project, I designed an AI to learn how to play the popular cardgame Blackjack without any humans teaching it.  

@@ -27,7 +27,7 @@ actionSpace = [0,1] #These are the actions the AI can take, 0 for stick, 1 for h
 
 
 #Changeable Variables
-dealerLimit = 18 #Sum needed for dealer to stop hitting. 
+dealerLimit = 17 #Sum needed for dealer to stop hitting. 
 breakTime = 0 #Delay (in seconds) between games #! IMPORTANT
 FPS = 30 #How many frames will be drawn every second.
 volume = True
@@ -140,7 +140,7 @@ def aiStep(action, playersCard, dealersCards):
         playersCard.append(hit(len(playersCard), True))
     else:
         dealersCards[-1].reveal()
-        while checkSum(dealersCards) <= dealerLimit:
+        while checkSum(dealersCards) < dealerLimit:
             dealersCards.append(hit(len(dealersCards), False))
     return playersCard, dealersCards
 

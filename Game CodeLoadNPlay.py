@@ -27,8 +27,8 @@ actionSpace = [0,1] #These are the actions the AI can take, 0 for stick, 1 for h
 
 
 #Changeable Variables
-dealerLimit = 18 #Sum needed for dealer to stop hitting. 
-breakTime = 2 #Delay (in seconds) between games #! IMPORTANT
+dealerLimit = 17 #Sum needed for dealer to stop hitting. #! what the hell? #! Buuuug
+breakTime = 0 #Delay (in seconds) between games #! IMPORTANT
 FPS = 30 #How many frames will be drawn every second.
 volume = True
 
@@ -140,7 +140,7 @@ def aiStep(action, playersCard, dealersCards):
         playersCard.append(hit(len(playersCard), True))
     else:
         dealersCards[-1].reveal()
-        while checkSum(dealersCards) <= dealerLimit:
+        while checkSum(dealersCards) < dealerLimit:
             dealersCards.append(hit(len(dealersCards), False))
     return playersCard, dealersCards
 
@@ -216,8 +216,11 @@ def main():
     
     GAME_FONT = pygame.freetype.Font("Roboto-Light.ttf", 24)
     
+    var = 2000
     while running:
+        # clock.tick(FPS*var)
         clock.tick(FPS)
+
         screen.fill(pygame.Color(33,42,49))
         
         global volume
