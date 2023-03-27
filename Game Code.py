@@ -10,7 +10,7 @@ import pygame.freetype
 height = 600
 width = 1000
 screen = pygame.display.set_mode((width, height))
-
+SAVEQ = False
 backgroundImage = pygame.image.load('Cards/background.jpg')
 backgroundImage = pygame.transform.scale(backgroundImage, (height, width)) #scales an image
 
@@ -25,13 +25,13 @@ actionSpace = [0,1] #These are the actions the AI can take, 0 for stick, 1 for h
 
 #Changeable Variables
 dealerLimit = 18 #Sum needed for dealer to stop hitting. 
-breakTime = 2 #Delay (in seconds) between games
+breakTime = 0 #Delay (in seconds) between games #! IMPORTANT
 FPS = 30 #How many frames will be drawn every second.
 volume = True
 
 
 #Changeable AI Variables
-AI = False #If False, you can play against the dealer without the AI
+AI = True #If False, you can play against the dealer without the AI
 e = 0.1 #Epsilon Value for Monte Carlo Algorithm
 gamma = 1 #Gamma Value for Monte Carlo Algorithm
 alpha=0.02 #Alpha Value for Monte Carlo Algorithm
@@ -70,23 +70,23 @@ class card():
         else:
             screen.blit(pygame.image.load('Cards/faceDown.png'), (self.x,self.y))
 
-
 #Hit method, will create new card for either the dealer or player
 def hit(cardCount, isPlayer): 
     if isPlayer: 
-        return card(850-130*cardCount-5*cardCount, 378, True) #Will create a new card next to any existing cards
+        return card(850-130*cardCount-5*cardCount, 378, True)  #Will create a new card next to any existing cards #! first two arguments are for positioning cards in the screen
     else:
         return card(20 + 130*cardCount + 5*cardCount, 20, False) #Will create a new card next to any existing cards
     
 #Will determine if the ace can be counted as 11, without it exceeding the 21st limit
-def checkAce(playersCard, hidden=False):
+def checkAce(playersCard, hidden=False): #! BUUUGGGG hidden is not used here
     isAce=False
     sumOfList = 0
     
     for i in playersCard:
-        sumOfList += i.number
-        if i.number == 1:
-            isAce = True
+        if i.show: #! bug fixed
+            sumOfList += i.number
+            if i.number == 1:
+                isAce = True
     
     if isAce and sumOfList-1+11<=21:
         return True
@@ -103,7 +103,7 @@ def checkSum(cards, hidden=False):
            if i.show == True:
                cardSum += i.number
            
-    if checkAce(cards, hidden):
+    if checkAce(cards, hidden): #! BUUUUGGGG: when checking ace you are happen to know dealers hidden card
         cardSum = cardSum - 1 + 11
     
     return cardSum
@@ -154,7 +154,7 @@ def genAction(state, e, Q):
     else:
         probs = [0.5, 0.5]
         
-    action = np.random.choice(np.arange(2), p=probs)   
+    action = np.random.choice(np.arange(2), p=probs) #! 1 is hit 0 is stay  
     return action
     
 #Will create the current state value. 
@@ -167,7 +167,11 @@ def createStateValues(playersCard, dealersCards):
 def setQ(Q, currentEpisode, gamma, alpha):
     for t in range(len(currentEpisode)):
         #episode[t+1:,2] gives all the rewards in the episode from t+1 onwords
-        rewards = currentEpisode[t:,2]
+        rewards = []
+        for i in range(t,len(currentEpisode)):
+            rewards.append(currentEpisode[i][2]) #! this is like 2*2 array where rows are episode and collumns are state[0] action[1] reward[2]
+        rewards = np.array(rewards)
+
         #Create a list with the gamma rate increasing
         discountRate = [gamma**i for i in range(1,len(rewards)+1)]
         #Discounting the rewards from t+1 onwards
@@ -175,6 +179,7 @@ def setQ(Q, currentEpisode, gamma, alpha):
         #Summing up the discounted rewards to equal the return at time step t
         Gt = np.sum(updatedReward)
         #Calculating the actual Q table value of the state, actionn pair. 
+        #! Q[state][action]
         Q[currentEpisode[t][0]][currentEpisode[t][1]] += alpha *(Gt - Q[currentEpisode[t][0]][currentEpisode[t][1]])
     return Q
 
@@ -287,6 +292,10 @@ def main():
             action = genAction(currentState, e, Q)
             if action==0:
                 dealer=True
+
+            if currentState[1]>11:#! debug
+                tmp = createStateValues(playersCard, dealersCards)
+
             playersCard, dealersCards = aiStep(action, playersCard, dealersCards)
             gameOver, winner = whoWon(dealer,playersCard,dealersCards)
             if gameOver and winner:
@@ -299,9 +308,20 @@ def main():
             currentEpisode.append((currentState, action, reward))
             
             if gameOver:
-                currentEpisode = np.array(currentEpisode)
+                # currentEpisode = np.array(currentEpisode)
                 Q = setQ(Q, currentEpisode, gamma, alpha)
                 currentEpisode= []
+                if gamesPlayed == 18000 :
+                    hard = np.zeros((21-2+1, 11-2+1,2))
+                    soft = np.zeros((11-2+1, 11-2+1,2))
+                    for key, value in Q.items():
+                        print("key" , type(key))
+                        row, col, ace = eval(str(key))
+                        if ace:
+                            
+                            soft[row-11,col-2] = value
+                        else:
+                            hard[row-2,col-2] = value
         
 
         for event in pygame.event.get():
