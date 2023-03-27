@@ -13,7 +13,7 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'OptimalTableMoneyCheck'
+    comment = 'onlineMCcheckxxxxx'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -22,9 +22,16 @@ if __name__ == '__main__':
     logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
 
     points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
-    hardUrl = "/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy"
-    softUrl = "/home/arash/Workdir/BJ/BlackjackAI/soft18000.npy"
+    # hardUrl = "/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy"
+    # softUrl = "/home/arash/Workdir/BJ/BlackjackAI/soft18000.npy"
+    # hardUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/hard23400.npy"
+    # softUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/soft23400.npy"
+    hardUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/hard0.npy"
+    softUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/soft0.npy"
+
+    
     player = Player(points,dir,hardUrl,softUrl)
+    # player = Player(points,dir)
     dealer = Dealer(points)
     wins = 0
     losses = 0
@@ -69,7 +76,7 @@ if __name__ == '__main__':
             result = dealer.takeAction(decision) 
             SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
-        player.learnMC(SAR) 
+        # player.learnMC(SAR) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11111 
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
         dealer.endHand()
@@ -105,7 +112,7 @@ if __name__ == '__main__':
         if gameIt%500 == 0:
             print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
 
-            player.vizMC(gameIt)
+            player.vizMC(gameIt) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         winPercentages.append(round(wins/gameIt*100,2))
         lossPercentages.append(round(losses/gameIt*100,2))

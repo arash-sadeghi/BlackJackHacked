@@ -207,12 +207,12 @@ class Player:
         # return self.interact()
         # return self.arashCoded(cards)
         # return self.randomPlayer()
-        return self.optimalTable(cards)
+        # return self.optimalTable(cards)
         # return self.alwaysHit()
         # return self.alwaysStay()
         # return self.exploreAllActions(cards)
         # return self.MCtakeAction(cards)
-        # return self.MCtakeActionPreUploaded(cards)
+        return self.MCtakeActionPreUploaded(cards)
 
 
     def record(self,cardsOnTable , decision , result):
