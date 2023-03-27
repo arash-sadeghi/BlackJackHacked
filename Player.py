@@ -6,8 +6,14 @@ class Player:
         self.points = points
         self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
         self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * hit/stay/double * win/loss/push
+        self.MCsoftTable = np.zeros((11-2+1, 11-2+1 , 2)) 
+        self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * hit/stay
+
         self.fileDir = fileDir
         self.valueOptimalTables()
+        self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
+        self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
+        self.alpha=0.02
 
     def valueOptimalTables(self):
         #! hard table
@@ -195,7 +201,8 @@ class Player:
         # return self.optimalTable(cards)
         # return self.alwaysHit()
         # return self.alwaysStay()
-        return self.exploreAllActions(cards)
+        # return self.exploreAllActions(cards)
+        return self.MCtakeAction(cards)
 
 
     def record(self,cardsOnTable , decision , result):
@@ -239,5 +246,62 @@ class Player:
     def saveRecords(self):
         np.save(os.path.join(self.fileDir,"playerhardTable.npy"),self.hardTable)
         np.save(os.path.join(self.fileDir,"playersoftTable.npy"),self.softTable)
+        np.save(os.path.join(self.fileDir,"MCplayerhard.npy"),self.MChardTable)
+        np.save(os.path.join(self.fileDir,"MCplayersoft.npy"),self.MCsoftTable)
+
+    def learnMC(self,gameTrack):
+        allRewards = []
+        for i in range(len(gameTrack)):
+            if gameTrack[i][2] == "handInProgress": allRewards.append(0)
+            elif gameTrack[i][2] == "playerLost": allRewards.append(-1)
+            elif gameTrack[i][2] == "playerWon": allRewards.append(1)
+        allRewards = np.array(allRewards)
+
+        for i in range(len(gameTrack)):
+            state = gameTrack[i][0]
+            dealerValue = self.points[state[0]]
+            palyerValue = 0
+            for j in range(1,len(state)):
+                palyerValue += self.points[state[j]]
+            action = gameTrack[i][1]
+
+            if action == 'hit':
+                action = 0
+            elif action == 'stay':
+                action = 1
+            rewards = allRewards[i:]
+            discountRate = [self.gamma**k for k in range(1,len(rewards)+1)] # Create a list with the gamma rate increasing
+            updatedReward = rewards*discountRate # Discounting the rewards from t+1 onwards
+            Gt = np.sum(updatedReward) # Summing up the discounted rewards to equal the return at time step t
+            if 'A' in state[1:]: #! ace in hand of player
+                self.MCsoftTable[ palyerValue-11-2 , dealerValue-2 , action] += self.alpha *(Gt - self.MCsoftTable[ palyerValue-11-2 , dealerValue-2 , action])           
+            else:
+                self.MChardTable[ palyerValue-2 , dealerValue-2 , action] += self.alpha *(Gt - self.MChardTable[ palyerValue-2 , dealerValue-2 , action])           
+
+    def MCtakeAction(self,cards):
+        dealerCard = cards[0]
+        dealerCardValue = self.points[cards[0]]
+        playerCards = cards[1:]
+        playerCardsSum = sum([self.points[_] for _ in playerCards])        
+        if 'A' in playerCards:
+            probHit = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , 0]
+            probStick = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , 1]
+        else:
+            probHit = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , 0]
+            probStick = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , 1]
 
 
+        if probHit>probStick:
+            probs = [1-self.e, self.e]
+        elif probStick>probHit:
+            probs = [self.e, 1-self.e]
+        else:
+            probs = [0.5, 0.5]
+            
+        action = np.random.choice(np.arange(2), p=probs)   
+        if action == 0:
+            return 'hit'
+        elif action == 1:
+            return 'stay'
+        else:
+            raise NameError('[-] MC chose invlid action')

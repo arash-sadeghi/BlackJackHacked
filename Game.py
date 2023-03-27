@@ -13,7 +13,7 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'Exploring'
+    comment = 'MCplay'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
             money += bet * 3/2
             dealer.endHand() #! no result is given for player since it was pure luck of player
             continue
-        gameTrack = []
+        SAR = []
         result = 'handInProgress'       
         while result == 'handInProgress':
             print2("[game] handInProgress")
@@ -65,9 +65,9 @@ if __name__ == '__main__':
             decision = player.decide(cardsOnTable)
             print2(f'[game] decision {decision}')
             result = dealer.takeAction(decision)
-            gameTrack.append([cardsOnTable , decision , result])    
+            SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
-
+        player.learnMC(SAR)
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
         dealer.endHand()
