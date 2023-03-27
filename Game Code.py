@@ -311,7 +311,7 @@ def main():
                 # currentEpisode = np.array(currentEpisode)
                 Q = setQ(Q, currentEpisode, gamma, alpha)
                 currentEpisode= []
-                if gamesPlayed == 18000 :
+                if gamesPlayed == 13000 :
                     hard = np.zeros((21-2+1, 11-2+1,2))
                     soft = np.zeros((11-2+1, 11-2+1,2))
                     for key, value in Q.items():
