@@ -33,5 +33,6 @@ STATS game 100000 progress 100.0 wins 4774 - 4.77 |||| losses 95226 - 95.23 ||||
 STATS game 100000 progress 100.0 wins 44443 - 44.44 |||| losses 47970 - 47.97 |||| pushs 7587 - 7.59 initial Money 100000 money at the end 106875.0 bet 10
 
 - MyMC :  STATS game 600000 progress 100.0 wins 252588 - 42.1 |||| losses 309954 - 51.66 |||| pushs 37458 - 6.24 initial Money 100000 money at the end -331815.0 bet 10
+STATS game 180000 progress 100.0 wins 78875 - 43.82 |||| losses 88386 - 49.1 |||| pushs 12739 - 7.08 initial Money 100000 money at the end 47310.0 bet 10
 
-- online MC : 
+- online MC : STATS game 16500 progress 9.17 wins 6831 - 41.4 |||| losses 8802 - 53.35 |||| pushs 867 - 5.25 initial Money 100000 money at the end 84180.0 bet 10

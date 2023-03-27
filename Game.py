@@ -13,7 +13,7 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'MCplay'
+    comment = 'OptimalTableMoneyCheck'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -22,12 +22,14 @@ if __name__ == '__main__':
     logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
 
     points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
-    player = Player(points,dir)
+    hardUrl = "/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy"
+    softUrl = "/home/arash/Workdir/BJ/BlackjackAI/soft18000.npy"
+    player = Player(points,dir,hardUrl,softUrl)
     dealer = Dealer(points)
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 600000
+    numberOfGames = 180000
     money = 100000
     initialMoney = money
     bet = 10
@@ -64,10 +66,10 @@ if __name__ == '__main__':
             print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
             decision = player.decide(cardsOnTable)
             print2(f'[game] decision {decision}')
-            result = dealer.takeAction(decision)
+            result = dealer.takeAction(decision) 
             SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
-        player.learnMC(SAR)
+        player.learnMC(SAR) 
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
         dealer.endHand()
@@ -100,11 +102,17 @@ if __name__ == '__main__':
         print2(f"[game] {result}",color)
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}" , 'magenta' , attrs=["bold"])
 
-        if gameIt%500 == 0: print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
+        if gameIt%500 == 0:
+            print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
+
+            player.vizMC(gameIt)
 
         winPercentages.append(round(wins/gameIt*100,2))
         lossPercentages.append(round(losses/gameIt*100,2))
         pushPercentages.append(round(pushes/gameIt*100,2))
+
+        if money<=0:
+            print2("WENT BROKE")
 
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
     print(f"Time Passed {time() - startTime} s for {numberOfGames} games")

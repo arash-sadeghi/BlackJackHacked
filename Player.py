@@ -1,20 +1,29 @@
 import numpy as np
 import random
 import os
+from PIL import Image
+
+#! 1 is hit 0 is stay
+HIT = 1
+STAY = 0
+DOUBLE = 2
+DOUBLE2 = 3
 class Player:
-    def __init__(self,points,fileDir):
+    def __init__(self,points,fileDir , hardUrl="" , softUrl=""):
         self.points = points
         self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
-        self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * hit/stay/double * win/loss/push
+        self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * stay/hit/double * win/loss/push
         self.MCsoftTable = np.zeros((11-2+1, 11-2+1 , 2)) 
-        self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * hit/stay
+        self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * stay/hit
 
         self.fileDir = fileDir
         self.valueOptimalTables()
-        self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
+        # self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
+        self.e = 0.01 #Epsilon Value for Monte Carlo Algorithm
         self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
         self.alpha=0.02
-
+        if hardUrl != "" and softUrl != "":
+            self.MCuplaod(hardUrl,softUrl) 
     def valueOptimalTables(self):
         #! hard table
         self.optimalTableHard = np.zeros((21-2+1, 11-2+1))
@@ -138,11 +147,11 @@ class Player:
         else:
             action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
 
-        if action == 1:
+        if action == HIT:
             return 'hit'
-        elif action == 0:
+        elif action == STAY:
             return 'stay'
-        elif action == 2 or action == 3:
+        elif action == DOUBLE or action == DOUBLE2:
             return 'double'
         else:
             raise NameError('[-] invalid action chosen')
@@ -185,11 +194,11 @@ class Player:
         
         actionIndex = exploredRec.index(min(exploredRec))
         
-        if actionIndex == 0 :
+        if actionIndex == HIT :
             return 'hit' 
-        elif actionIndex == 1:
+        elif actionIndex == STAY:
             return 'stay' 
-        elif actionIndex == 2:
+        elif actionIndex == DOUBLE:
             return 'double'
         else:
             raise NameError('[-][PLAYER] wrong action index')
@@ -198,11 +207,12 @@ class Player:
         # return self.interact()
         # return self.arashCoded(cards)
         # return self.randomPlayer()
-        # return self.optimalTable(cards)
+        return self.optimalTable(cards)
         # return self.alwaysHit()
         # return self.alwaysStay()
         # return self.exploreAllActions(cards)
-        return self.MCtakeAction(cards)
+        # return self.MCtakeAction(cards)
+        # return self.MCtakeActionPreUploaded(cards)
 
 
     def record(self,cardsOnTable , decision , result):
@@ -214,11 +224,11 @@ class Player:
         playerCardsSum = sum([self.points[_] for _ in playerCards])
 
         if decision == 'hit':
-            actionIndex = 0 
+            actionIndex = HIT 
         elif decision == 'stay':
-            actionIndex = 1 
+            actionIndex = STAY
         elif decision == 'double':
-            actionIndex = 2 
+            actionIndex = DOUBLE
 
         if 'A' in playerCards:
             if 'playerWon' in result:
@@ -266,9 +276,9 @@ class Player:
             action = gameTrack[i][1]
 
             if action == 'hit':
-                action = 0
+                action = HIT
             elif action == 'stay':
-                action = 1
+                action = STAY
             rewards = allRewards[i:]
             discountRate = [self.gamma**k for k in range(1,len(rewards)+1)] # Create a list with the gamma rate increasing
             updatedReward = rewards*discountRate # Discounting the rewards from t+1 onwards
@@ -284,24 +294,85 @@ class Player:
         playerCards = cards[1:]
         playerCardsSum = sum([self.points[_] for _ in playerCards])        
         if 'A' in playerCards:
-            probHit = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , 0]
-            probStick = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , 1]
+            probHit = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , HIT]
+            probStick = self.MCsoftTable[playerCardsSum-11-2 , dealerCardValue-2 , STAY]
         else:
-            probHit = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , 0]
-            probStick = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , 1]
+            probHit = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , HIT]
+            probStick = self.MChardTable[playerCardsSum-2 , dealerCardValue-2 , STAY]
 
 
         if probHit>probStick:
-            probs = [1-self.e, self.e]
+            probs = [self.e, 1-self.e] #!!!!!!!!!!!!!!!!
         elif probStick>probHit:
-            probs = [self.e, 1-self.e]
+            probs = [1-self.e, self.e]
         else:
             probs = [0.5, 0.5]
             
         action = np.random.choice(np.arange(2), p=probs)   
-        if action == 0:
+        if action == HIT:
             return 'hit'
-        elif action == 1:
+        elif action == STAY:
             return 'stay'
         else:
             raise NameError('[-] MC chose invlid action')
+    
+    def MCtakeActionPreUploaded(self,cards):
+        dealerCard = cards[0]
+        dealerCardValue = self.points[cards[0]]
+        playerCards = cards[1:]
+        playerCardsSum = sum([self.points[_] for _ in playerCards])        
+        if 'A' in playerCards:
+            probHit = self.MCsoftTableOnline[playerCardsSum-11-2 , dealerCardValue-2 , 1]
+            probStick = self.MCsoftTableOnline[playerCardsSum-11-2 , dealerCardValue-2 , 0]
+        else:
+            probHit = self.MChardTableOnline[playerCardsSum-2 , dealerCardValue-2 , 1]
+            probStick = self.MChardTableOnline[playerCardsSum-2 , dealerCardValue-2 , 0]
+
+
+        if probHit>probStick:
+            probs = [self.e, 1-self.e]
+        elif probStick>probHit:
+            probs = [1-self.e, self.e]
+        else:
+            probs = [0.5, 0.5]
+            
+        action = np.random.choice(np.arange(2), p=probs)   
+        if action == HIT:
+            return 'hit'
+        elif action == STAY:
+            return 'stay'
+        else:
+            raise NameError('[-] MC chose invlid action')
+
+    def MCuplaod(self,hardUrl,softUrl):
+        self.MChardTableOnline = np.load(hardUrl)
+        self.MCsoftTableOnline = np.load(softUrl)
+
+    def vizMC(self,it): #! for MC online
+
+        # input_array = np.copy(self.MChardTable) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        input_array = np.copy(self.MChardTableOnline)
+
+        # Define the colors for the table cells
+        blue = (0, 0, 255) 
+        red = (255, 0, 0)#! hit
+
+        # Create the output image as a 2D array of pixels
+        image_array = np.zeros((input_array.shape[0], input_array.shape[1], 3), dtype=np.uint8)
+
+        # Set the colors of the pixels based on the input array
+        for i in range(input_array.shape[0]):
+            for j in range(input_array.shape[1]):
+                if input_array[i, j ,0] > input_array[i, j ,1]:
+                    image_array[i, j] = blue
+                else:
+                    image_array[i, j] = red
+
+        # Create a PIL Image object from the pixel array
+        image = Image.fromarray(image_array)
+        image = image.resize((image_array.shape[1]*200,image_array.shape[0]*200))
+        # Save the image to a file
+        # file_name = os.path.splitext(os.path.basename(url))[0]
+        file_name = os.path.join(self.fileDir,f"MyMChardTable{it}.png")
+
+        image.save(file_name)
