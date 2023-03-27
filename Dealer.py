@@ -35,12 +35,12 @@ class Dealer:
     def deal(self):
         chosenCards = self.giveCards(4)
         self.playerHand.extend(chosenCards[0:2])
-        if self.playerHand[0] == 'A' and self.playerHand[1] == 'A':
-            self.playerHand[1] == 'As'
+        if self.playerHand[0] == 'A' and self.playerHand[1] == 'A': #! handling A A case
+            self.playerHand[1] = 'As'
 
         self.dealerHand.extend(chosenCards[2:4])
         if self.dealerHand[0] == 'A' and self.dealerHand[1] == 'A':
-            self.dealerHand[1] == 'As'
+            self.dealerHand[1] = 'As'
 
         return [self.dealerHand[0] , self.playerHand[0] , self.playerHand[1]] #! this return is mainly for player 
     

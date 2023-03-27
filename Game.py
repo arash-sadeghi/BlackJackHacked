@@ -13,20 +13,21 @@ def print2(inp,color='white',attrs=[]):
 
 if __name__ == '__main__':
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'optimalTableWdouble'
-    logName += comment
+    comment = 'Exploring'
+    logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
-    logName = os.path.join(dir,logName)
-    logging.basicConfig(filename=logName+'.log', level=logging.DEBUG)
+    # logName = os.path.join(dir,logName)
+    # logging.basicConfig(filename=logName+'.log', level=logging.DEBUG)
+    logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
 
     points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
-    player = Player(points,logName)
+    player = Player(points,dir)
     dealer = Dealer(points)
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 100000
+    numberOfGames = 600000
     money = 100000
     initialMoney = money
     bet = 10
@@ -56,8 +57,6 @@ if __name__ == '__main__':
 
         decision = player.decide(cardsOnTable)
         print2(f'[game] decision {decision}')
-        
-        
         
         result = dealer.takeAction(decision)
         while result == 'handInProgress':
@@ -112,15 +111,15 @@ if __name__ == '__main__':
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
     print(f"Time Passed {time() - startTime} s for {numberOfGames} games")
 
-    with open(logName+"Results.txt","w") as f:
+    with open(os.path.join(dir,"Results.txt"),"w") as f:
         f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
     
-    np.save(logName+"Winpers.npy" , np.array(winPercentages))
-    np.save(logName+"Losspers.npy" , np.array(lossPercentages))
-    np.save(logName+"Pushpers.npy" , np.array(pushPercentages))
-    with open(logName+"Dealer.pickle", "wb") as f:
+    np.save(os.path.join(dir,"Winpers.npy") , np.array(winPercentages))
+    np.save(os.path.join(dir,"Losspers.npy") , np.array(lossPercentages))
+    np.save(os.path.join(dir,"Pushpers.npy") , np.array(pushPercentages))
+    with open(os.path.join(dir,"Dealer.pickle"), "wb") as f:
         pickle.dump(dealer, f)
-    with open(logName+"Player.pickle", "wb") as f:
+    with open(os.path.join(dir,"Player.pickle"), "wb") as f:
         pickle.dump(player, f)
-
+    player.saveRecords()
     print("files saved! goodbye")

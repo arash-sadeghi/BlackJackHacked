@@ -2,6 +2,18 @@
 - [x] implement soft A
 
 - [ ] implement split and double
+
+# Experiments to do:
+- [ ] **Brute force:**  explore the whole sum/dealer card table. visit each state at least 10 times. table is 20(sums)*10(dealer cards)*3(actions) = 600. Visit each state 10 times--> 600 * 10 = 6000. explorable
+
+- [ ] implement montecarlo and see if it really increases number of wins
+
+- [ ] count series of wins and losses. see if you can predict wins and losses before hand. instead of trying to win, try to know when you will loose.
+    - [ ] count consecutive losses and wins through out the hand. and say foreaxmple its this much % chance to lose x hands consecutively. Adjust your bet accordingly
+
+
+
+
 # Results:
 
 - my strategy codded : STATS game 1000000 progress 100.0 wins 449830 - 44.98 |||| losses 472730 - 47.27 |||| pushs 77440 - 7.74

@@ -1,12 +1,15 @@
 import numpy as np
 import random
+import os
 class Player:
-    def __init__(self,points,logName):
+    def __init__(self,points,fileDir):
         self.points = points
-        self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * hit/stay/double * win/loss/push
-        self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
-        self.fileName = logName
-        
+        self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
+        self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * hit/stay/double * win/loss/push
+        self.fileDir = fileDir
+        self.valueOptimalTables()
+
+    def valueOptimalTables(self):
         #! hard table
         self.optimalTableHard = np.zeros((21-2+1, 11-2+1))
 
@@ -122,31 +125,21 @@ class Player:
         playerCards = cards[1:]
         playerCardsSum = sum([self.points[_] for _ in playerCards])
 
-        if playerCardsSum > 21 and 'A' in playerCards: #! for the case of A A
-            playerCards[playerCards.index('A')] = 'As'
-            playerCardsSum = sum([self.points[_] for _ in playerCards])
-
         if 'A' in playerCards:
             rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1]
             rowIndex = self.points[rowIndex]
             action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
-            if action == 1:
-                return 'hit'
-            elif action == 0:
-                return 'stay'
-            elif action == 2 or action == 3:
-                return 'double'
-
-
         else:
             action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
-            if action == 1:
-                return 'hit'
-            elif action == 0:
-                return 'stay'
-            elif action == 2:
-                return 'double'
 
+        if action == 1:
+            return 'hit'
+        elif action == 0:
+            return 'stay'
+        elif action == 2 or action == 3:
+            return 'double'
+        else:
+            raise NameError('[-] invalid action chosen')
 
     def arashCoded(self,cards):
         dealerCard = cards[0]
@@ -167,24 +160,51 @@ class Player:
         elif dealerCardValue < 7:
             return 'stay'
 
+    def exploreAllActions(self,cards):
+        dealerCard = cards[0]
+        dealerCardValue = self.points[cards[0]]
+        playerCards = cards[1:]
+        playerCardsSum = sum([self.points[_] for _ in playerCards])
+
+        explored = 0
+        exploredRec =[]
+        for i in range(self.hardTable.shape[2]): #! within actions
+            for j in range(self.hardTable.shape[3]): #! within results
+                if 'A' in playerCards: #? can be optimized
+                    explored += self.softTable[playerCardsSum-2][dealerCardValue-2][i][j]
+                else:
+                    explored += self.hardTable[playerCardsSum-2][dealerCardValue-2][i][j]
+            exploredRec.append(explored)
+            explored = 0
+        
+        actionIndex = exploredRec.index(min(exploredRec))
+        
+        if actionIndex == 0 :
+            return 'hit' 
+        elif actionIndex == 1:
+            return 'stay' 
+        elif actionIndex == 2:
+            return 'double'
+        else:
+            raise NameError('[-][PLAYER] wrong action index')
+
     def decide(self,cards):
         # return self.interact()
         # return self.arashCoded(cards)
         # return self.randomPlayer()
-        return self.optimalTable(cards)
+        # return self.optimalTable(cards)
         # return self.alwaysHit()
         # return self.alwaysStay()
-
+        return self.exploreAllActions(cards)
 
 
     def record(self,cardsOnTable , decision , result):
+        #! record functions different than soft table. because in record you might have more than one card
+        #! record is called when there is a result. if you hit and game does not result in anything, its not recorded
         dealerCard = cardsOnTable[0]
         dealerCardValue = self.points[dealerCard]
         playerCards = cardsOnTable[1:]
         playerCardsSum = sum([self.points[_] for _ in playerCards])
-        if playerCardsSum > 21 and 'A' in playerCards:
-            playerCards[playerCards.index('A')] = 'As'
-            playerCardsSum -= 10
 
         if decision == 'hit':
             actionIndex = 0 
@@ -202,7 +222,6 @@ class Player:
                 resultIndex = 2
             else:
                 raise NameError("[player] invalid result")
-
             self.softTable[playerCardsSum-2][dealerCardValue-2][actionIndex][resultIndex] += 1 
 
         else: 
@@ -218,6 +237,7 @@ class Player:
             self.hardTable[playerCardsSum-2][dealerCardValue-2][actionIndex][resultIndex] += 1 
     
     def saveRecords(self):
-        np.save("logs/playerhardTable"+self.fileName+".npy",self.hardTable)
-        np.save("logs/playersoftTable"+self.fileName+".npy",self.softTable)
+        np.save(os.path.join(self.fileDir,"playerhardTable.npy"),self.hardTable)
+        np.save(os.path.join(self.fileDir,"playersoftTable.npy"),self.softTable)
+
 
