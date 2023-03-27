@@ -3,10 +3,13 @@
 # Date Written: 6/7/2020
 # =============================================================================
 
+from PIL import Image
+import os
 import pygame
 import numpy as np
 from collections import defaultdict
 import pygame.freetype
+import json
 height = 600
 width = 1000
 screen = pygame.display.set_mode((width, height))
@@ -293,9 +296,6 @@ def main():
             if action==0:
                 dealer=True
 
-            if currentState[1]>11:#! debug
-                tmp = createStateValues(playersCard, dealersCards)
-
             playersCard, dealersCards = aiStep(action, playersCard, dealersCards)
             gameOver, winner = whoWon(dealer,playersCard,dealersCards)
             if gameOver and winner:
@@ -311,7 +311,14 @@ def main():
                 # currentEpisode = np.array(currentEpisode)
                 Q = setQ(Q, currentEpisode, gamma, alpha)
                 currentEpisode= []
-                if gamesPlayed == 13000 :
+
+                #! save state
+                if gamesPlayed % 1000 == 0:
+                    Qstr = {str(k): v for k, v in Q.items()}
+                    for key in Qstr.keys():
+                        Qstr[key] = Qstr[key].tolist()
+                    with open(f'Qvizs/Qstr{gamesPlayed}.json', 'w') as f:
+                        json.dump(Qstr, f)
                     hard = np.zeros((21-2+1, 11-2+1,2))
                     soft = np.zeros((11-2+1, 11-2+1,2))
                     for key, value in Q.items():
@@ -319,9 +326,14 @@ def main():
                         row, col, ace = eval(str(key))
                         if ace:
                             
-                            soft[row-11,col-2] = value
+                            soft[row-11-2,col-2] = value
                         else:
                             hard[row-2,col-2] = value
+                    np.save(f"Qvizs/hard{gamesPlayed}.npy",hard)
+                    np.save(f"Qvizs/soft{gamesPlayed}.npy",soft)
+                    vizMC(hard,gamesPlayed)
+                    print(f"{gamesPlayed} saved")
+
         
 
         for event in pygame.event.get():
@@ -386,6 +398,33 @@ def main():
         
     pygame.display.quit()
  
+
+def vizMC(input_array , it): #! for MC online
+
+    # Define the colors for the table cells
+    blue = (0, 0, 255) 
+    red = (255, 0, 0)#! hit
+
+    # Create the output image as a 2D array of pixels
+    image_array = np.zeros((input_array.shape[0], input_array.shape[1], 3), dtype=np.uint8)
+
+    # Set the colors of the pixels based on the input array
+    for i in range(input_array.shape[0]):
+        for j in range(input_array.shape[1]):
+            if input_array[i, j ,0] > input_array[i, j ,1]:
+                image_array[i, j] = blue
+            else:
+                image_array[i, j] = red
+
+    # Create a PIL Image object from the pixel array
+    image = Image.fromarray(image_array)
+    image = image.resize((image_array.shape[1]*200,image_array.shape[0]*200))
+    # Save the image to a file
+    # file_name = os.path.splitext(os.path.basename(url))[0]
+    file_name = os.path.join('Qvizs',f"viz{it}.png")
+
+    image.save(file_name)
+
 #Will call the main method
 if __name__ == "__main__":
     main()
