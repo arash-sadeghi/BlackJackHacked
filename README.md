@@ -49,3 +49,6 @@ STATS game 180000 progress 100.0 wins 79919 - 44.4 |||| losses 85930 - 47.74 |||
 
 - if you bet 0.001$ for 100$, over 180000 hands, you will reach to 102$ dollar without busting. lets say each hand takes 20 seconds to play. 180000 will take ~ 17 hours to play. in 17 hours you will make 2$. Minimum wage is 10$/h. for this. you want 17h*/10$ = 170$ earning. this requires initial money of 170/2\*100 = 8500. So if you risk 8500$ with bet of 8500/100\*0.001 = 0.085 and you play 17h, you will make minimum wage, 170$ earning total.
 
+- No double makes you broke. so money comes with double. I tried many times without double it always goes down.
+
+- your money grows over time but over reasonable time, the growth is slow

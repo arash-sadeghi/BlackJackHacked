@@ -59,7 +59,7 @@ def vizMoney(url):
     plt.plot(moneys,label = file_name)
 
     plt.grid()
-    plt.savefig(os.path.join('data',file_name)+'RealMoneySmallBet'+'.png')
+    plt.savefig(os.path.join('data',file_name)+'RealMoneyRealBet3'+'.png')
     plt.show()
 
 # viz("/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy")
@@ -68,4 +68,9 @@ def vizMoney(url):
 # vizOptimalTable("/home/arash/Workdir/BJ/BlackJackHacked/optimalTableHard.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/doublefixedmethod1Mon_Mar_27_23_07_48_2023/MoneyRec.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestmethod1Mon_Mar_27_23_21_59_2023/MoneyRec.npy")
-vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestRealMoneySmallBetmethod1Mon_Mar_27_23_35_04_2023/MoneyRec.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestRealMoneySmallBetmethod1Mon_Mar_27_23_35_04_2023/MoneyRec.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2method1Mon_Mar_27_23_53_20_2023/MoneyRec.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2method1Mon_Mar_27_23_58_27_2023/MoneyRec.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2NoDoublemethod1Tue_Mar_28_00_01_05_2023/MoneyRec.npy")
+vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2WDouble2method1Tue_Mar_28_00_22_55_2023/MoneyRec.npy")
+

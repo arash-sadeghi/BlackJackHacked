@@ -6,12 +6,19 @@ from time import ctime , time
 import os
 import numpy as np
 import pickle
-
+import matplotlib.pyplot as plt
 
 METHODmc = 0
 METHODoptimalTable = 1
 METHODexternalQ = 2
 METHODarashCoded = 3
+
+def vizMoney(moneys):
+    plt.plot(moneys)
+
+    plt.grid()
+    # plt.savefig(os.path.join('data',file_name)+'RealMoneyRealBet3'+'.png')
+    plt.show()
 
 def print2(inp,color='white',attrs=[]):
     # print(colored(inp,color,attrs=attrs))
@@ -20,7 +27,7 @@ def print2(inp,color='white',attrs=[]):
 if __name__ == '__main__':
     method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'OptMoneyTestRealMoneySmallBet'+f'method{method}'
+    comment = 'realBlongRunNoD'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -32,13 +39,15 @@ if __name__ == '__main__':
     losses = 0
     pushes = 0
     numberOfGames = 180000
+    # numberOfGames = 600
     money = 100
     initialMoney = money
-    bet = 0.001
+    bet = 1
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
     MoneyRec = []
+    wentBroke = False
     startTime = time()
     for gameIt in range(1,numberOfGames+1): #! just to avoid game number 0
 
@@ -107,7 +116,7 @@ if __name__ == '__main__':
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}" , 'magenta' , attrs=["bold"])
 
         if gameIt%500 == 0:
-            print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
+            print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet} Broke {wentBroke}")
             if method == METHODexternalQ:
                 player.vizMC(gameIt) 
 
@@ -117,15 +126,13 @@ if __name__ == '__main__':
         MoneyRec.append(money)
 
         if money<=0:
-            print2("WENT BROKE")
-            print("WENT BROKE")
-
+            wentBroke = True
 
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
     print(f"Time Passed {time() - startTime} s for {numberOfGames} games")
 
     with open(os.path.join(dir,"Results.txt"),"w") as f:
-        f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
+        f.write(f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet} Broke {wentBroke}")
     
     np.save(os.path.join(dir,"Winpers.npy") , np.array(winPercentages))
     np.save(os.path.join(dir,"Losspers.npy") , np.array(lossPercentages))
@@ -138,3 +145,4 @@ if __name__ == '__main__':
         pickle.dump(player, f)
     player.saveRecords()
     print("files saved! goodbye")
+    vizMoney(MoneyRec)
