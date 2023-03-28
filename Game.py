@@ -38,7 +38,7 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 180000
+    numberOfGames = 1_000_000
     # numberOfGames = 600
     money = 100
     initialMoney = money
@@ -144,5 +144,6 @@ if __name__ == '__main__':
     with open(os.path.join(dir,"Player.pickle"), "wb") as f:
         pickle.dump(player, f)
     player.saveRecords()
-    print("files saved! goodbye")
     vizMoney(MoneyRec)
+    print("files saved! goodbye")
+    
