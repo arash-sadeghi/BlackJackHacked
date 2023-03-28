@@ -59,7 +59,7 @@ def vizMoney(url):
     plt.plot(moneys,label = file_name)
 
     plt.grid()
-    plt.savefig(os.path.join('data',file_name)+'run2'+'.png')
+    plt.savefig(os.path.join('data',file_name)+'RealMoneySmallBet'+'.png')
     plt.show()
 
 # viz("/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy")
@@ -68,4 +68,4 @@ def vizMoney(url):
 # vizOptimalTable("/home/arash/Workdir/BJ/BlackJackHacked/optimalTableHard.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/doublefixedmethod1Mon_Mar_27_23_07_48_2023/MoneyRec.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestmethod1Mon_Mar_27_23_21_59_2023/MoneyRec.npy")
-vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/OptMoneyTestRealMoneymethod1Mon_Mar_27_23_30_13_2023/MoneyRec.npy")
+vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestRealMoneySmallBetmethod1Mon_Mar_27_23_35_04_2023/MoneyRec.npy")

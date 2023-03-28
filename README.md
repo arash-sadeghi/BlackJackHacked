@@ -41,6 +41,11 @@ STATS game 180000 progress 100.0 wins 78875 - 43.82 |||| losses 88386 - 49.1 |||
 - optimal Table fixed double:
 STATS game 180000 progress 100.0 wins 79919 - 44.4 |||| losses 85930 - 47.74 |||| pushs 14151 - 7.86 initial Money 100000 money at the end 116435.0 bet 10
 
-The probability of a win in a typical shoe blackjack game is 43.3%, a push is 8.7%, and a loss is 48.0% 
+# Facts
 
-if your bet is small compared to your initial money, your money will grow over time. However if your bet is small (1$ bet for initial money of 100$) you will get broke few times
+- The probability of a win in a typical shoe blackjack game is 43.3%, a push is 8.7%, and a loss is 48.0% 
+
+- if your bet is small compared to your initial money, your money will grow over time. However if your bet is small (1$ bet for initial money of 100$) you will get broke few times
+
+- if you bet 0.001$ for 100$, over 180000 hands, you will reach to 102$ dollar without busting. lets say each hand takes 20 seconds to play. 180000 will take ~ 17 hours to play. in 17 hours you will make 2$. Minimum wage is 10$/h. for this. you want 17h*/10$ = 170$ earning. this requires initial money of 170/2\*100 = 8500. So if you risk 8500$ with bet of 8500/100\*0.001 = 0.085 and you play 17h, you will make minimum wage, 170$ earning total.
+
