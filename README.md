@@ -52,3 +52,7 @@ STATS game 180000 progress 100.0 wins 79919 - 44.4 |||| losses 85930 - 47.74 |||
 - No double makes you broke. so money comes with double. I tried many times without double it always goes down.
 
 - your money grows over time but over reasonable time, the growth is slow
+
+# Next to do:
+- [ ] implement card counting with your own method and analyze how much its effecting over 600 hands
+- [ ] check win loss streak theory and adapt your bet accordingly. estimate next hands win/loss.
