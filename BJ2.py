@@ -3,16 +3,177 @@ import numpy as np
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
-
+import matplotlib.pyplot as plt
 INITIAL_BALANCE = 1000
 NUM_DECKS = 6
+
+
+import enum
+
+ranks = {
+    "two" : 2,
+    "three" : 3,
+    "four" : 4,
+    "five" : 5,
+    "six" : 6,
+    "seven" : 7,
+    "eight" : 8,
+    "nine" : 9,
+    "ten" : 10,
+    "jack" : 10,
+    "queen" : 10,
+    "king" : 10,
+    "ace" : (1, 11)
+}
+    
+class Suit(enum.Enum):
+    spades = "spades"
+    clubs = "clubs"
+    diamonds = "diamonds"
+    hearts = "hearts"
+
+
+class Card:
+    def __init__(self, suit, rank, value):
+        self.suit = suit
+        self.rank = rank
+        self.value = value
+        
+    def __str__(self):
+        return self.rank + " of " + self.suit.value
+
+class Deck:
+    def __init__(self, num=1):
+        self.cards = []
+        for i in range(num):
+            for suit in Suit:
+                for rank, value in ranks.items():
+                    self.cards.append(Card(suit, rank, value))
+                
+    def shuffle(self):
+        random.shuffle(self.cards)
+        
+    def deal(self):
+        return self.cards.pop(0)
+    
+    def peek(self):
+        if len(self.cards) > 0:
+            return self.cards[0]
+        
+    def add_to_bottom(self, card):
+        self.cards.append(card)
+        
+    def __str__(self):
+        result = ""
+        for card in self.cards:
+            result += str(card) + "\n"
+        return result
+    
+    def __len__(self):
+        return len(self.cards)
+
+
+# This follows the same, official rules every time.
+# Still need to figure out what happens if there are multiple Aces.
+def dealer_eval(player_hand):
+    num_ace = 0
+    use_one = 0
+    for card in player_hand:
+        if card.rank == "ace":
+            num_ace += 1
+            use_one += card.value[0] # use 1 for Ace
+        else:
+            use_one += card.value
+    
+    if num_ace > 0:
+        # See if using 11 instead of 1 for the Aces gets the 
+        # dealer's hand value closer to the [17, 21] range
+        
+        # The dealer will follow Hard 17 rules.
+        # This means the dealer will not hit again if
+        # the Ace yields a 17. 
+        
+        # This also means that Aces initially declared as 11's can
+        # be changed to 1's as new cards come.
+        
+        ace_counter = 0
+        while ace_counter < num_ace:
+            # Only add by 10 b/c 1 is already added before
+            use_eleven = use_one + 10 
+            
+            if use_eleven > 21:
+                return use_one
+            elif use_eleven >= 17 and use_eleven <= 21:
+                return use_eleven
+            else:
+                # The case where even using Ace as eleven is less than 17.
+                use_one = use_eleven
+            
+            ace_counter += 1
+        
+        return use_one
+    else:
+        return use_one
+
+
+def player_eval(player_hand):
+    num_ace = 0
+    # use_one means that every ace that in the hand is counted as one.
+    use_one = 0
+    for card in player_hand:
+        if card.rank == "ace":
+            num_ace += 1
+            use_one += card.value[0] # use 1 for Ace
+        else:
+            use_one += card.value
+    
+    if num_ace > 0:
+        # Define player policy for Aces:
+        # Make Aces 11 if they get you to the range [18,21]
+        # Otherwise, use one.
+        
+        ace_counter = 0
+        while ace_counter < num_ace:
+            # Only add by 10 b/c 1 is already added before
+            use_eleven = use_one + 10 
+            
+            if use_eleven > 21:
+                return use_one
+            elif use_eleven >= 18 and use_eleven <= 21:
+                return use_eleven
+            else:
+                # This allows for some Aces to be 11s, and others to be 1.
+                use_one = use_eleven
+            
+            ace_counter += 1
+        
+        return use_one
+    else:
+        return use_one
+
+
+
+def dealer_turn(dealer_hand, deck):
+    # Calculate dealer hand's value.
+    dealer_value = dealer_eval(dealer_hand)
+
+    # Define dealer policy (is fixed to official rules)
+
+    # The dealer keeps hitting until their total is 17 or more
+    while dealer_value < 17:
+        # hit
+        dealer_hand.append(deck.deal())
+        dealer_value = dealer_eval(dealer_hand)
+
+    return dealer_value, dealer_hand, deck
+
 
 class BlackjackEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     
     def __init__(self):
         super(BlackjackEnv, self).__init__()
-        
+        self.balance = INITIAL_BALANCE #!
         # Initialize the blackjack deck.
         self.bj_deck = Deck(NUM_DECKS)
         
@@ -21,8 +182,8 @@ class BlackjackEnv(gym.Env):
         
         self.reward_options = {"lose":-100, "tie":0, "win":100}
         
-        # hit = 0, stand = 1
-        self.action_space = spaces.Discrete(2)
+        # hit = 0, stand = 1 #! double = 2
+        self.action_space = spaces.Discrete(3)
         
         '''
         First element of tuple is the range of possible hand values for the player. (3 through 20)
@@ -49,6 +210,12 @@ class BlackjackEnv(gym.Env):
         # re-calculate the value of the player's hand after any changes to the hand.
         self.player_value = player_eval(self.player_hand)
     
+        if action == 2: #! DOUBLE
+            self.player_hand.append(self.bj_deck.deal())
+            
+            # re-calculate the value of the player's hand after any changes to the hand.
+            self.player_value = player_eval(self.player_hand)
+
     def step(self, action):
         self._take_action(action)
         
@@ -111,7 +278,7 @@ class BlackjackEnv(gym.Env):
         # Shuffle before beginning. Only shuffle once before the start of each game.
         self.bj_deck.shuffle()
          
-        self.balance = INITIAL_BALANCE
+        # self.balance = INITIAL_BALANCE #!
         
         self.done = False
         
@@ -155,3 +322,27 @@ class BlackjackEnv(gym.Env):
         
         print()
 
+env = BlackjackEnv()
+
+total_rewards = 0
+NUM_EPISODES = 1000
+balances = []
+for _ in range(NUM_EPISODES):
+    env.reset()
+    
+    while env.done == False:
+        # action = env.action_space.sample()
+        action = 1
+
+
+        new_state, reward, done, desc = env.step(action)
+        total_rewards += reward
+
+    balances.append(env.balance)
+    
+avg_reward = total_rewards / NUM_EPISODES
+print(avg_reward)
+balances = np.array(balances)
+np.save("balances",balances)
+plt.plot(balances)
+plt.show()
