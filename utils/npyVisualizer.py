@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 import os
-
+import matplotlib.pyplot as plt
 HIT = 1
 STAY = 0
 
@@ -53,7 +53,19 @@ def vizOptimalTable(url):
     file_name = os.path.join('data',file_name)
     image.save(file_name+".png")
 
+def vizMoney(url):
+    moneys = np.load(url)
+    file_name = os.path.splitext(os.path.basename(url))[0]
+    plt.plot(moneys,label = file_name)
+
+    plt.grid()
+    plt.savefig(os.path.join('data',file_name)+'run2'+'.png')
+    plt.show()
+
 # viz("/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy")
 # vizMConline("/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy")
-vizMConline("/home/arash/Workdir/BJ/BlackjackAI/hard20000.npy")
+# vizMConline("/home/arash/Workdir/BJ/BlackjackAI/hard20000.npy")
 # vizOptimalTable("/home/arash/Workdir/BJ/BlackJackHacked/optimalTableHard.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/doublefixedmethod1Mon_Mar_27_23_07_48_2023/MoneyRec.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/OptMoneyTestmethod1Mon_Mar_27_23_21_59_2023/MoneyRec.npy")
+vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/OptMoneyTestRealMoneymethod1Mon_Mar_27_23_30_13_2023/MoneyRec.npy")

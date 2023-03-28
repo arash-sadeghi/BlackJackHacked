@@ -20,7 +20,7 @@ def print2(inp,color='white',attrs=[]):
 if __name__ == '__main__':
     method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'doublefixed'+f'method{method}'
+    comment = 'OptMoneyTestRealMoneySmallBet'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -32,9 +32,9 @@ if __name__ == '__main__':
     losses = 0
     pushes = 0
     numberOfGames = 180000
-    money = 100000
+    money = 100
     initialMoney = money
-    bet = 10
+    bet = 0.001
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
@@ -118,6 +118,8 @@ if __name__ == '__main__':
 
         if money<=0:
             print2("WENT BROKE")
+            print("WENT BROKE")
+
 
     print2(f"Time Passed {time() - startTime} s for {numberOfGames} games")
     print(f"Time Passed {time() - startTime} s for {numberOfGames} games")

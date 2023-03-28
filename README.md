@@ -43,3 +43,7 @@ STATS game 180000 progress 100.0 wins 78875 - 43.82 |||| losses 88386 - 49.1 |||
 
 - optimal Table fixed double:
 STATS game 180000 progress 100.0 wins 79919 - 44.4 |||| losses 85930 - 47.74 |||| pushs 14151 - 7.86 initial Money 100000 money at the end 116435.0 bet 10
+
+The probability of a win in a typical shoe blackjack game is 43.3%, a push is 8.7%, and a loss is 48.0% 
+
+if your bet is small compared to your initial money, your money will grow over time. However if your bet is small (1$ bet for initial money of 100$) you will get broke few times
