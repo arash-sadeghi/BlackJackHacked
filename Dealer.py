@@ -111,7 +111,7 @@ class Dealer:
         self.playerHand.append(newCard) #! put new card in playerHand
     
     
-    def play(self): #! 0 push 1 player win -1 player lost
+    def play(self): #! 0 push 1 player win -1 player lost #! at this point we know that palyer is not busted
         playerSum = sum([self.points[_] for _ in self.playerHand])
         dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
@@ -128,8 +128,8 @@ class Dealer:
         if dealerSum > 21:
             return 'playerWon' #! dealer busted
 
-        elif dealerSum == 21: #! smart : if 21 is on first two cards, then its surely blackjack
-            return 'playerLost' #! dealer blackjack
+        elif dealerSum == 21 and len(self.dealerHand) == 2: #! smart : if 21 is on first two cards, then its surely blackjack
+                return 'playerLost' #! dealer blackjack
         
         elif dealerSum >= 17: 
             if dealerSum > playerSum:
