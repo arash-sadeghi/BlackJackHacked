@@ -7,31 +7,26 @@ import os
 import numpy as np
 import pickle
 
+
+METHODmc = 0
+METHODoptimalTable = 1
+METHODexternalQ = 2
+METHODarashCoded = 3
+
 def print2(inp,color='white',attrs=[]):
     # print(colored(inp,color,attrs=attrs))
     logging.info(inp)
 
 if __name__ == '__main__':
+    method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'onlineMCcheckxxxxx'
+    comment = 'doublefixed'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
-    # logName = os.path.join(dir,logName)
-    # logging.basicConfig(filename=logName+'.log', level=logging.DEBUG)
     logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
-
     points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
-    # hardUrl = "/home/arash/Workdir/BJ/BlackjackAI/hard18000.npy"
-    # softUrl = "/home/arash/Workdir/BJ/BlackjackAI/soft18000.npy"
-    # hardUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/hard23400.npy"
-    # softUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/soft23400.npy"
-    hardUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/hard0.npy"
-    softUrl = "/home/arash/Workdir/BJ/BlackjackAIOnline/Qvizs/soft0.npy"
-
-    
-    player = Player(points,dir,hardUrl,softUrl)
-    # player = Player(points,dir)
+    player = Player(points,dir,method)
     dealer = Dealer(points)
     wins = 0
     losses = 0
@@ -43,6 +38,7 @@ if __name__ == '__main__':
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
+    MoneyRec = []
     startTime = time()
     for gameIt in range(1,numberOfGames+1): #! just to avoid game number 0
 
@@ -76,7 +72,8 @@ if __name__ == '__main__':
             result = dealer.takeAction(decision) 
             SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
-        # player.learnMC(SAR) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11111 
+        if method == METHODmc:
+            player.learnMC(SAR)
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
         dealer.endHand()
@@ -111,12 +108,13 @@ if __name__ == '__main__':
 
         if gameIt%500 == 0:
             print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}")
-
-            player.vizMC(gameIt) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if method == METHODexternalQ:
+                player.vizMC(gameIt) 
 
         winPercentages.append(round(wins/gameIt*100,2))
         lossPercentages.append(round(losses/gameIt*100,2))
         pushPercentages.append(round(pushes/gameIt*100,2))
+        MoneyRec.append(money)
 
         if money<=0:
             print2("WENT BROKE")
@@ -130,6 +128,8 @@ if __name__ == '__main__':
     np.save(os.path.join(dir,"Winpers.npy") , np.array(winPercentages))
     np.save(os.path.join(dir,"Losspers.npy") , np.array(lossPercentages))
     np.save(os.path.join(dir,"Pushpers.npy") , np.array(pushPercentages))
+    np.save(os.path.join(dir,"MoneyRec.npy") , np.array(MoneyRec))
+
     with open(os.path.join(dir,"Dealer.pickle"), "wb") as f:
         pickle.dump(dealer, f)
     with open(os.path.join(dir,"Player.pickle"), "wb") as f:

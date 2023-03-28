@@ -83,11 +83,14 @@ class Dealer:
             return self.play() #! return result of dealer play
 
         elif action == 'double':
+            if len(self.playerHand)>2:
+                raise NameError('[-] invalid double')
+
             self.hit()
             bustRes = self.checkBust(self.playerHand)
             if bustRes == 1:
                 return 'playerLostDouble' #! palyer busted
-            elif bustRes == 0: #! ace is 1 after this
+            elif bustRes == 0: #! ace is 1 after this. bustRes is zero only if there is a ace in hand
                 self.playerHand[ self.playerHand.index('A') ] = 'As' #! Ace is by default considered 11. this solves the fact that player should take the maximum from players hand in soft hands
             
             dealerRes = self.play() #! return result of dealer play

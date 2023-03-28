@@ -8,22 +8,32 @@ HIT = 1
 STAY = 0
 DOUBLE = 2
 DOUBLE2 = 3
+
+METHODmc = 0
+METHODoptimalTable = 1
+METHODexternalQ = 2
+METHODarashCoded = 3
 class Player:
-    def __init__(self,points,fileDir , hardUrl="" , softUrl=""):
+    def __init__(self , points , fileDir , method , hardUrl="" , softUrl=""):
         self.points = points
         self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
         self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * stay/hit/double * win/loss/push
-        self.MCsoftTable = np.zeros((11-2+1, 11-2+1 , 2)) 
-        self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * stay/hit
-
+        self.method = method
         self.fileDir = fileDir
-        self.valueOptimalTables()
-        # self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
-        self.e = 0.01 #Epsilon Value for Monte Carlo Algorithm
-        self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
-        self.alpha=0.02
-        if hardUrl != "" and softUrl != "":
+
+        if self.method == METHODmc:
+            self.MCsoftTable = np.zeros((11-2+1, 11-2+1 , 2)) 
+            self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * stay/hit
+            # self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
+            self.e = 0.01 #Epsilon Value for Monte Carlo Algorithm
+            self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
+            self.alpha=0.02
+
+        if self.method == METHODoptimalTable:
+            self.valueOptimalTables()
+        if self.method == METHODexternalQ:
             self.MCuplaod(hardUrl,softUrl) 
+
     def valueOptimalTables(self):
         #! hard table
         self.optimalTableHard = np.zeros((21-2+1, 11-2+1))
@@ -152,7 +162,10 @@ class Player:
         elif action == STAY:
             return 'stay'
         elif action == DOUBLE or action == DOUBLE2:
-            return 'double'
+            if len(playerCards) >2: #! this is not first action. you cannot double
+                return 'hit'
+            else:
+                return 'double'
         else:
             raise NameError('[-] invalid action chosen')
 
@@ -199,21 +212,29 @@ class Player:
         elif actionIndex == STAY:
             return 'stay' 
         elif actionIndex == DOUBLE:
-            return 'double'
+            if len(playerCards) >2: #! this is not first action. you cannot double
+                return 'hit'
+            else:
+                return 'double'
         else:
             raise NameError('[-][PLAYER] wrong action index')
 
     def decide(self,cards):
+        if self.method == METHODmc:
+            return self.MCtakeAction(cards)
+        elif self.method == METHODoptimalTable:
+            return self.optimalTable(cards)
+        elif self.method == METHODexternalQ:
+            return self.MCtakeActionPreUploaded(cards)
+        elif self.method == METHODarashCoded:
+            return self.arashCoded(cards)
+        else:
+            raise NameError('Invalid decision method')
         # return self.interact()
-        # return self.arashCoded(cards)
         # return self.randomPlayer()
-        # return self.optimalTable(cards)
         # return self.alwaysHit()
         # return self.alwaysStay()
         # return self.exploreAllActions(cards)
-        # return self.MCtakeAction(cards)
-        return self.MCtakeActionPreUploaded(cards)
-
 
     def record(self,cardsOnTable , decision , result):
         #! record functions different than soft table. because in record you might have more than one card
