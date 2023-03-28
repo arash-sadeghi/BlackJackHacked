@@ -277,8 +277,9 @@ class Player:
     def saveRecords(self):
         np.save(os.path.join(self.fileDir,"playerhardTable.npy"),self.hardTable)
         np.save(os.path.join(self.fileDir,"playersoftTable.npy"),self.softTable)
-        np.save(os.path.join(self.fileDir,"MCplayerhard.npy"),self.MChardTable)
-        np.save(os.path.join(self.fileDir,"MCplayersoft.npy"),self.MCsoftTable)
+        if self.method == METHODmc:
+            np.save(os.path.join(self.fileDir,"MCplayerhard.npy"),self.MChardTable)
+            np.save(os.path.join(self.fileDir,"MCplayersoft.npy"),self.MCsoftTable)
 
     def learnMC(self,gameTrack):
         allRewards = []

@@ -29,9 +29,12 @@ STATS game 100000 progress 100.0 wins 4774 - 4.77 |||| losses 95226 - 95.23 ||||
 
 - always stay: STATS game 100000 progress 100.0 wins 41590 - 41.59 |||| losses 53976 - 53.98 |||| pushs 4434 - 4.43 initial Money 100000 money at the end 165.0 bet 10
 
-- optimal Table with double : STATS game 100000 progress 100.0 wins 44721 - 44.72 |||| losses 47658 - 47.66 |||| pushs 7621 - 7.62 initial Money 100000 money at the end 113430.0 bet 10 --> despite the low percentage, we made money with double
+- optimal Table with double (faulty double): STATS game 100000 progress 100.0 wins 44721 - 44.72 |||| losses 47658 - 47.66 |||| pushs 7621 - 7.62 initial Money 100000 money at the end 113430.0 bet 10 --> despite the low percentage, we made money with double
 STATS game 100000 progress 100.0 wins 44443 - 44.44 |||| losses 47970 - 47.97 |||| pushs 7587 - 7.59 initial Money 100000 money at the end 106875.0 bet 10
 STATS game 180000 progress 100.0 wins 79409 - 44.12 |||| losses 86991 - 48.33 |||| pushs 13600 - 7.56 initial Money 100000 money at the end 101435.0 bet 10
+
+- optimal Table fixed double:
+
 
 - MyMC :  STATS game 600000 progress 100.0 wins 252588 - 42.1 |||| losses 309954 - 51.66 |||| pushs 37458 - 6.24 initial Money 100000 money at the end -331815.0 bet 10
 STATS game 180000 progress 100.0 wins 78875 - 43.82 |||| losses 88386 - 49.1 |||| pushs 12739 - 7.08 initial Money 100000 money at the end 47310.0 bet 10
