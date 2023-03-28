@@ -1,7 +1,7 @@
 import random
 import numpy as np
-import gym
-from gym import error, spaces, utils
+import BJpureGym
+from BJpureGym import error, spaces, utils
 from gym.utils import seeding
 import matplotlib.pyplot as plt
 INITIAL_BALANCE = 1000
@@ -168,7 +168,7 @@ def dealer_turn(dealer_hand, deck):
     return dealer_value, dealer_hand, deck
 
 
-class BlackjackEnv(gym.Env):
+class BlackjackEnv(BJpureGym.Env):
     metadata = {'render.modes': ['human']}
     
     def __init__(self):
@@ -226,7 +226,7 @@ class BlackjackEnv(gym.Env):
         # keep playing.
         rewards = 0
         
-        if self.done:
+        if self.done: 
             # CALCULATE REWARDS
             if self.player_value > 21: # above 21, player loses automatically.
                 rewards = self.reward_options["lose"]
@@ -329,7 +329,7 @@ NUM_EPISODES = 1000
 balances = []
 for _ in range(NUM_EPISODES):
     env.reset()
-    
+
     while env.done == False:
         # action = env.action_space.sample()
         action = 1
