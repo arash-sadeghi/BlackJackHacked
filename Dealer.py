@@ -17,7 +17,8 @@ class Dealer:
         self.shoeChange = False
         
         self.env = gym.make('Blackjack-v1',sab=False,natural=True)
-        self.env.np_random.__setstate__(np.random.default_rng(1).__getstate__())
+        self.env.np_random.__setstate__(np.random.default_rng(1).__getstate__());print("seeded") #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     
     def createCard(self):

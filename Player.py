@@ -27,7 +27,7 @@ class Player:
             # self.e = 0.1 #Epsilon Value for Monte Carlo Algorithm
             self.e = 0.01 #Epsilon Value for Monte Carlo Algorithm
             self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
-            self.alpha=0.02
+            self.alpha=0.01
 
         if self.method == METHODoptimalTable:
             self.valueOptimalTables()
@@ -385,8 +385,8 @@ class Player:
 
     def vizMC(self,it): #! for MC online
 
-        # input_array = np.copy(self.MChardTable) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        input_array = np.copy(self.MChardTableOnline)
+        input_array = np.copy(self.MChardTable) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # input_array = np.copy(self.MChardTableOnline)
 
         # Define the colors for the table cells
         blue = (0, 0, 255) 

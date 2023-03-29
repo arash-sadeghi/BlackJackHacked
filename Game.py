@@ -25,9 +25,9 @@ def print2(inp,color='white',attrs=[]):
     logging.info(inp)
 
 if __name__ == '__main__':
-    method = METHODoptimalTable
+    method = METHODmc
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'fixedMC'+f'method{method}'
+    comment = 'MC'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 100_000
+    numberOfGames = 1_000_000
     # numberOfGames = 600
     money = 100
     initialMoney = money
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
         if gameIt%500 == 0:
             print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet} Broke {wentBroke}")
-            if method == METHODexternalQ:
+            if method == METHODexternalQ or method == METHODmc:
                 player.vizMC(gameIt) 
 
         winPercentages.append(round(wins/gameIt*100,2))
