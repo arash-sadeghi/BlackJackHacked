@@ -72,5 +72,5 @@ def vizMoney(url):
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2method1Mon_Mar_27_23_53_20_2023/MoneyRec.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2method1Mon_Mar_27_23_58_27_2023/MoneyRec.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2NoDoublemethod1Tue_Mar_28_00_01_05_2023/MoneyRec.npy")
-vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2WDouble2method1Tue_Mar_28_00_22_55_2023/MoneyRec.npy")
-
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2WDouble2method1Tue_Mar_28_00_22_55_2023/MoneyRec.npy")
+vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/moneyRecGym.npy")

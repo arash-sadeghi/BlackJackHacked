@@ -3,3 +3,4 @@ test/
 logs/
 data/
 *.npy
+*.log

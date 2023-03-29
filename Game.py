@@ -85,8 +85,8 @@ if __name__ == '__main__':
             player.learnMC(SAR)
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
-        dealer.endHand()
-
+        # if decision == 'double':#! DEBUG
+        #     print("bug")
         if result == 'playerLost': 
             color = "red"
             losses += 1 
@@ -111,6 +111,8 @@ if __name__ == '__main__':
         if result == 'push': 
             color = "yellow"
             pushes += 1
+
+        dealer.endHand()
 
         print2(f"[game] {result}",color)
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}" , 'magenta' , attrs=["bold"])

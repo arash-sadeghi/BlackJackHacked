@@ -59,7 +59,7 @@ class Player:
         self.optimalTableHard[17-2: , :] = 0
 
         #! soft table
-        self.optimalTableSoft = np.zeros((9-2+1, 11-2+1))
+        self.optimalTableSoft = np.zeros((10-2+1, 11-2+1))
         
         self.optimalTableSoft[2-2 , 2-2:4-2+1] = 1 
         self.optimalTableSoft[2-2 , 4-2+1:6-2+1] = 2 
@@ -90,6 +90,8 @@ class Player:
         self.optimalTableSoft[8-2 , 6-2+1:] = 0
 
         self.optimalTableSoft[9-2 , :] = 0
+        self.optimalTableSoft[10-2 , :] = 0 #! including sum 21
+
 
         #! split table
         self.optimalTableSplit = np.zeros((11-2+1, 11-2+1))
@@ -145,17 +147,28 @@ class Player:
     def alwaysStay(self):
         return 'stay'
 
-    def optimalTable(self,cards):
-        dealerCardValue = self.points[cards[0]]
-        playerCards = cards[1:]
-        playerCardsSum = sum([self.points[_] for _ in playerCards])
+    def optimalTable(self,cards,gym):
+        if gym:
+            playerCards = cards[1]
+            playerCardsSum = cards[0]
+            dealerCardValue = cards[2]
+            if cards[3]:
+                rowIndex = playerCardsSum - 11
+                action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
+            else:
+                action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
 
-        if 'A' in playerCards:
-            rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1]
-            rowIndex = self.points[rowIndex]
-            action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
         else:
-            action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
+            dealerCardValue = self.points[cards[0]]
+            playerCards = cards[1:]
+            playerCardsSum = sum([self.points[_] for _ in playerCards])
+
+            if 'A' in playerCards:
+                rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1]
+                rowIndex = self.points[rowIndex]
+                action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
+            else:
+                action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
 
         if action == HIT:
             return 'hit'
@@ -219,11 +232,11 @@ class Player:
         else:
             raise NameError('[-][PLAYER] wrong action index')
 
-    def decide(self,cards):
+    def decide(self,cards,gym=False):
         if self.method == METHODmc:
             return self.MCtakeAction(cards)
         elif self.method == METHODoptimalTable:
-            return self.optimalTable(cards)
+            return self.optimalTable(cards,gym)
         elif self.method == METHODexternalQ:
             return self.MCtakeActionPreUploaded(cards)
         elif self.method == METHODarashCoded:

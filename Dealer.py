@@ -117,11 +117,14 @@ class Dealer:
 
         while dealerSum < 17: #! dealer needs to play
             newCard= self.giveCards(1)[0] #! select new card
+            #!!!! BUG is here. you check ace of new card only if dealer has a ace already
             if 'A' in self.dealerHand:
                 if newCard == 'A': #! 2 aces would definitly bust dealer, so it should count soft
                     newCard = 'As'
                 elif dealerSum + self.points[newCard]> 21: #! new card is busting the hand, ace should become 1
                     self.dealerHand[self.dealerHand.index('A')] = 'As'
+            elif newCard == 'A' and dealerSum + self.points[newCard]> 21: #! this was missing and causing bug.
+                    newCard = 'As'
             self.dealerHand.append(newCard) #! put new card in dealerHand
             dealerSum = sum([self.points[_] for _ in self.dealerHand])
 
