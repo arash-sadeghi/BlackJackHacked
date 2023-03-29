@@ -74,3 +74,4 @@ def vizMoney(url):
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2NoDoublemethod1Tue_Mar_28_00_01_05_2023/MoneyRec.npy")
 # vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/realisticMoney2WDouble2method1Tue_Mar_28_00_22_55_2023/MoneyRec.npy")
 vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/moneyRecGym.npy")
+# vizMoney("/home/arash/Workdir/BJ/BlackJackHacked/logs/importantRes/afterfixing1Wed_Mar_29_02_36_38_2023/MoneyRec.npy")

@@ -27,7 +27,7 @@ def print2(inp,color='white',attrs=[]):
 if __name__ == '__main__':
     method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'realBlongRunNoD'+f'method{method}'
+    comment = 'fixedMC'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 1_000_000
+    numberOfGames = 100_000
     # numberOfGames = 600
     money = 100
     initialMoney = money
@@ -85,32 +85,32 @@ if __name__ == '__main__':
             player.learnMC(SAR)
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
-        # if decision == 'double':#! DEBUG
-        #     print("bug")
         if result == 'playerLost': 
             color = "red"
             losses += 1 
             money -= bet
 
-        if result == 'playerLostDouble': 
+        elif result == 'playerLostDouble': 
             color = "red"
             losses += 1 
             money -= 2*bet
 
 
-        if result == 'playerWon': 
+        elif result == 'playerWon': 
             color = "green"
             wins += 1
             money += bet
 
-        if result == 'playerWonDouble': 
+        elif result == 'playerWonDouble': 
             color = "green"
             wins += 1
             money += 2*bet
 
-        if result == 'push': 
+        elif result == 'push': 
             color = "yellow"
             pushes += 1
+        else:
+            raise NameError('wrong result')
 
         dealer.endHand()
 
