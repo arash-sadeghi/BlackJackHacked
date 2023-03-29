@@ -164,8 +164,8 @@ class Player:
             playerCardsSum = sum([self.points[_] for _ in playerCards])
 
             if 'A' in playerCards:
-                rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1]
-                rowIndex = self.points[rowIndex]
+                # rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1] #!BUUUGGGGGL you dont know if player has two cards or if its just one ace and multiple other cards
+                rowIndex = playerCardsSum - 11 #!!!!! in case of double ace in gym, row index become -1.
                 action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
             else:
                 action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]

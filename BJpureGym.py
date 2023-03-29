@@ -30,6 +30,8 @@ if __name__ == '__main__':
     money = 100
     bet = 1
     moneyRec = []
+    env.np_random.__setstate__(np.random.default_rng(1).__getstate__());print("seed given") #!!!!!!!!!!!!! seeding
+
     for i in range(games):
         # Start a new game
         state = env.reset()
@@ -82,7 +84,7 @@ if __name__ == '__main__':
             
         money += reward*bet
         moneyRec.append(money)    
-        logging.info(f"\nMOENY:{money}\n")
+        logging.info(f"\ngame{i} MOENY:{money}\n")
 
         if i%5000 == 0: 
             print(f"{round(i/games*100,2)}")
