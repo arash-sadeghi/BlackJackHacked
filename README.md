@@ -6,6 +6,7 @@
 - [x] implement double
 - [ ] implement card counting with your own method and analyze how much its effecting over 600 hands
 - [ ] check win loss streak theory and adapt your bet accordingly. estimate next hands win/loss.
+- [ ] deal from low value deck and high value deck and see which one is favorable to palyer?
 
 # Experiments to do:
 - [x] **Brute force:**  explore the whole sum/dealer card table. visit each state at least 10 times. table is 20(sums)*10(dealer cards)*3(actions) = 600. Visit each state 10 times--> 600 * 10 = 6000. explorable --> cant say about hit. Monte carlo is doing the same thing.
