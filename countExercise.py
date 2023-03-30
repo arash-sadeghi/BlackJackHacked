@@ -43,8 +43,10 @@ def count(hand):
             c+=1
     return c
 
-deckNum = 6
-print(f"len{len(h)} , deck num {ceil(len(h)/52)}, card% {ceil(len(h)/(52*deckNum)*100)} count {count(h)} , true count {count(h)/(deckNum-ceil(len(h)/52))}")
+deckNum = 8
+print(f"len {len(h)} , deck num {ceil(len(h)/52)}, card% {ceil(len(h)/(52*deckNum)*100)} count {count(h)} , true count {count(h)/(deckNum-ceil(len(h)/52))}")
 
 for i in range(12):
     print(f"card {i}: {h.count(i)}")
+
+#? at least 5 decks (5 fours), at most 8 decks ()
