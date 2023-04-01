@@ -19,7 +19,7 @@
 # Results:
 
 - Optimal Table With Double:
-    -STATS game 1000000 progress 100.0 wins 428765 - 42.88 |||| losses 489511 - 48.95 |||| pushs 81724 - 8.17 initial Money 100 money at the end -22050.0 bet 1 Broke True 
+    - STATS game 1000000 progress 100.0 wins 428765 - 42.88 |||| losses 489511 - 48.95 |||| pushs 81724 - 8.17 initial Money 100 money at the end -22050.0 bet 1 Broke True 
 - bet fallacy:
     - STATS game 100000 progress 100.0 wins 38711 - 38.71 |||| losses 43446 - 43.45 |||| pushs 8600 - 8.6 initial Money 10000 money at the end 71538.5 bet 1 Broke True
 # Facts
