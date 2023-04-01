@@ -17,7 +17,7 @@ def vizMoney(moneys):
     plt.plot(moneys)
 
     plt.grid()
-    # plt.savefig(os.path.join('results','MyDealerWithBJcheck')+''+'.png')
+    plt.savefig(os.path.join('results','betFalacyWoDoubleStopCondResult')+''+'.png')
     plt.show()
 
 def print2(inp,color='white',attrs=[]):
@@ -27,7 +27,7 @@ def print2(inp,color='white',attrs=[]):
 if __name__ == '__main__':
     method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'backToCustom'+f'method{method}'
+    comment = 'betFalacy'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.makedirs(dir, exist_ok=True)
@@ -94,6 +94,7 @@ if __name__ == '__main__':
             print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
             decision = player.decide(cardsOnTable)
             print2(f'[game] decision {decision}')
+            if decision == 'double': decision = 'hit' #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             result = dealer.takeAction(decision) 
             SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
