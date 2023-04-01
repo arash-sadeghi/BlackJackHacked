@@ -25,9 +25,9 @@ def print2(inp,color='white',attrs=[]):
     logging.info(inp)
 
 if __name__ == '__main__':
-    method = METHODmc
+    method = METHODoptimalTable
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'MC'+f'method{method}'
+    comment = 'backToCustom'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.mkdir(dir)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     wins = 0
     losses = 0
     pushes = 0
-    numberOfGames = 1_000_000
+    numberOfGames = 100_000
     # numberOfGames = 600
     money = 100
     initialMoney = money
