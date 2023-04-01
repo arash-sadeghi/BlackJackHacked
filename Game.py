@@ -17,7 +17,7 @@ def vizMoney(moneys):
     plt.plot(moneys)
 
     plt.grid()
-    plt.savefig(os.path.join('results','betFalacyWoDoubleStopCondResult')+''+'.png')
+    plt.savefig(os.path.join('results','betFalacyWoDoubleStopCondResult3')+''+'.png')
     plt.show()
 
 def print2(inp,color='white',attrs=[]):
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     pushes = 0
     numberOfGames = 100_000
     # numberOfGames = 600
-    money = 100
+    money = 10000
     initialMoney = money
     initialBet = 1
     bet = initialBet
