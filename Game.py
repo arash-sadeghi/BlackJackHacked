@@ -17,7 +17,7 @@ def vizMoney(moneys):
     plt.plot(moneys)
 
     plt.grid()
-    plt.savefig(os.path.join('results','MyDealerWithBJcheck')+''+'.png')
+    # plt.savefig(os.path.join('results','MyDealerWithBJcheck')+''+'.png')
     plt.show()
 
 def print2(inp,color='white',attrs=[]):
@@ -42,7 +42,8 @@ if __name__ == '__main__':
     # numberOfGames = 600
     money = 100
     initialMoney = money
-    bet = 1
+    initialBet = 1
+    bet = initialBet
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
@@ -68,12 +69,14 @@ if __name__ == '__main__':
             print2("[game] Player BlackJack",'green')
             wins += 1
             money += bet * 3/2
+            bet = initialBet
             dealer.endHand() 
             continue
         elif BJres == "playerLost":
             print2("[game] Dealer BlackJack",'red')
             wins -= 1
             money -= bet 
+            bet = bet * 2
             dealer.endHand() 
             continue
         elif BJres == "push":
@@ -102,22 +105,28 @@ if __name__ == '__main__':
             color = "red"
             losses += 1 
             money -= bet
+            bet = bet * 2
 
         elif result == 'playerLostDouble': 
             color = "red"
             losses += 1 
             money -= 2*bet
-
+            bet = bet * 4
+            
 
         elif result == 'playerWon': 
             color = "green"
             wins += 1
             money += bet
+            bet = initialBet
+
 
         elif result == 'playerWonDouble': 
             color = "green"
             wins += 1
             money += 2*bet
+            bet = initialBet
+
 
         elif result == 'push': 
             color = "yellow"
