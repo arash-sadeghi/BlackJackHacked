@@ -17,7 +17,7 @@ def vizMoney(moneys):
     plt.plot(moneys)
 
     plt.grid()
-    # plt.savefig(os.path.join('data',file_name)+'RealMoneyRealBet3'+'.png')
+    plt.savefig(os.path.join('results','MyDealerWithBJcheck')+''+'.png')
     plt.show()
 
 def print2(inp,color='white',attrs=[]):
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     comment = 'backToCustom'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
-    os.mkdir(dir)
+    os.makedirs(dir, exist_ok=True)
     logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
     points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
     player = Player(points,dir,method)
@@ -62,12 +62,25 @@ if __name__ == '__main__':
         print2(f'[game] dealer hand {cardsOnTable[0]} ','cyan',attrs=['bold'])
         print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
 
-        if dealer.checkPlayerBJ() == 1:
+        BJres = dealer.checkPlayerBJ()
+        #! no result is given for player since it was pure luck of player
+        if  BJres == "playerWon":
             print2("[game] Player BlackJack",'green')
             wins += 1
             money += bet * 3/2
-            dealer.endHand() #! no result is given for player since it was pure luck of player
+            dealer.endHand() 
             continue
+        elif BJres == "playerLost":
+            print2("[game] Dealer BlackJack",'red')
+            wins -= 1
+            money -= bet 
+            dealer.endHand() 
+            continue
+        elif BJres == "push":
+            print2("[game] BlackJack pushed",'gray')
+            dealer.endHand() 
+            continue
+
         SAR = []
         result = 'handInProgress'       
         while result == 'handInProgress':

@@ -63,10 +63,17 @@ class Dealer:
         return [self.dealerHand[0] , self.playerHand[0] , self.playerHand[1]] #! this return is mainly for player 
     
     def checkPlayerBJ(self):
-        if self.points[self.playerHand[0]] + self.points[self.playerHand[1]] == 21:
-            return 1 #! player blackjack
-        else: 
-            return 0 #! player not blackjack
+        if self.points[self.dealerHand[0]] + self.points[self.dealerHand[1]] == 21:
+            if self.points[self.playerHand[0]] + self.points[self.playerHand[1]] == 21:
+                return "push"
+            else: 
+                return "playerLost"
+        elif self.points[self.playerHand[0]] + self.points[self.playerHand[1]] == 21:
+            return "playerWon"
+        else:
+            return "handInProgress"
+
+        
 
     def checkBust(self,hand):
         HandSum = sum([self.points[_] for _ in hand])
