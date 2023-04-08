@@ -1,3 +1,7 @@
+# reuslt
+## high low counting
+    - the more aggresive you get on betting when true count is high, the more money you earn. Otherwise your money will decay the same way it happens in normal blackjack
+
 # Alert
 
 - becarefull of the case when bet is bigger than you money
@@ -7,6 +11,7 @@
 # situation
 - fixed some fatal errors and incorporated gym. everything works reliably. but for the future I need t make sure of sanity of code before I run experiments. this will save me a lot of time. all this debug nonsense was because of if statements aces and all those stuff. code slower save time for later and avouid wrong rushed resuls. However for now we know how blackjack works monte carlo and all other stuff related to it. now count cards, estimate win and loss, and implement spliting.
 # TODO
+- [ ] **implement unit testing or any other way to make sure your code has no bugs**
 - [ ] **define performance meaasure for evaluating strategies**
 - [x] implement soft A
 - [ ] implement split
