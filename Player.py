@@ -2,25 +2,16 @@ import numpy as np
 import random
 import os
 from PIL import Image
+from Constants import *
 
-#! 1 is hit 0 is stay
-HIT = 1
-STAY = 0
-DOUBLE = 2
-DOUBLE2 = 3
-
-METHODmc = 0
-METHODoptimalTable = 1
-METHODexternalQ = 2
-METHODarashCoded = 3
 class Player:
-    def __init__(self , points , fileDir , method , hardUrl="" , softUrl=""):
+    def __init__(self , fileDir , method , betUnit , hardUrl="" , softUrl="" , totalDecks = None):
         self.points = points
         self.softTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) 
         self.hardTable = np.zeros((21-2+1, 11-2+1 , 3 , 3)) #! sums * dealer card * stay/hit/double * win/loss/push
         self.method = method
         self.fileDir = fileDir
-
+        self.betUnit = betUnit
         if self.method == METHODmc:
             self.MCsoftTable = np.zeros((11-2+1, 11-2+1 , 2)) 
             self.MChardTable = np.zeros((21-2+1, 11-2+1 , 2)) #! sums * dealer card * stay/hit
@@ -29,10 +20,14 @@ class Player:
             self.gamma = 1 #Gamma Value for Monte Carlo Algorithm
             self.alpha=0.01
 
-        if self.method == METHODoptimalTable:
+        if self.method == METHODoptimalTable or self.method == METHODcountCard:
             self.valueOptimalTables()
         if self.method == METHODexternalQ:
             self.MCuplaod(hardUrl,softUrl) 
+        if self.method == METHODcountCard:
+            self.runningCount = 0
+            self.trueCount = 0
+            self.totalDecks = totalDecks
 
     def valueOptimalTables(self):
         #! hard table
@@ -131,59 +126,43 @@ class Player:
     def interact(self):
         key = input('[player] decide >>> ')
         if key == 'h':
-            return 'hit'
+            return HITstr
         elif key == 's':
-            return 'stay'
+            return STAYstr
 
     def randomPlayer(self):
         if random.random()>0.5:
-            return 'hit'
+            return HITstr
         else:
-            return 'stay'
+            return STAYstr
 
-    def alwaysHit(self):
-        return 'hit'
+    def optimalTable(self,cards):
+        dealerCardValue = self.points[cards[0]]
+        playerCards = cards[1:]
+        playerCardsSum = sum([self.points[_] for _ in playerCards])
 
-    def alwaysStay(self):
-        return 'stay'
-
-    def optimalTable(self,cards,gym):
-        if gym:
-            playerCards = cards[1]
-            playerCardsSum = cards[0]
-            dealerCardValue = cards[2]
-            if cards[3]:
-                rowIndex = playerCardsSum - 11
-                action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
+        if 'A' in playerCards:
+            if playerCards[0] == 'A' and playerCards[1] == 'A': #! special case
+                rowIndex = 2 #! treat double ace as A and 2.     
             else:
-                action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
-
+                rowIndex = playerCardsSum - 11 
+            action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
         else:
-            dealerCardValue = self.points[cards[0]]
-            playerCards = cards[1:]
-            playerCardsSum = sum([self.points[_] for _ in playerCards])
-
-            if 'A' in playerCards:
-                # rowIndex = playerCards[0] if playerCards[1] == 'A' else playerCards[1] #!BUUUGGGGGL you dont know if player has two cards or if its just one ace and multiple other cards
-                rowIndex = playerCardsSum - 11 #!!!!! in case of double ace in gym, row index become -1.
-                action = self.optimalTableSoft[rowIndex-2,dealerCardValue-2]
-            else:
-                action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
+            action = self.optimalTableHard[playerCardsSum-2,dealerCardValue-2]
 
         if action == HIT:
-            return 'hit'
+            return HITstr
         elif action == STAY:
-            return 'stay'
+            return STAYstr
         elif action == DOUBLE or action == DOUBLE2:
             if len(playerCards) >2: #! this is not first action. you cannot double
-                return 'hit'
+                return HITstr
             else:
-                return 'double'
+                return DOUBLEstr
         else:
             raise NameError('[-] invalid action chosen')
 
     def arashCoded(self,cards):
-        dealerCard = cards[0]
         dealerCardValue = self.points[cards[0]]
         playerCards = cards[1:]
         playerCardsSum = sum([self.points[_] for _ in playerCards])
@@ -193,13 +172,13 @@ class Player:
         playerCardsSum = sum([self.points[_] for _ in playerCards])
 
         if playerCardsSum >= 17:
-            return 'stay'
+            return STAYstr
         elif playerCardsSum<=11:
-            return 'hit'
+            return HITstr
         elif dealerCardValue >= 7:
-            return 'hit'
+            return HITstr
         elif dealerCardValue < 7:
-            return 'stay'
+            return STAYstr
 
     def exploreAllActions(self,cards):
         dealerCard = cards[0]
@@ -221,22 +200,22 @@ class Player:
         actionIndex = exploredRec.index(min(exploredRec))
         
         if actionIndex == HIT :
-            return 'hit' 
+            return HITstr 
         elif actionIndex == STAY:
-            return 'stay' 
+            return STAYstr 
         elif actionIndex == DOUBLE:
             if len(playerCards) >2: #! this is not first action. you cannot double
-                return 'hit'
+                return HITstr
             else:
-                return 'double'
+                return DOUBLEstr
         else:
             raise NameError('[-][PLAYER] wrong action index')
 
-    def decide(self,cards,gym=False):
+    def decide(self,cards):
         if self.method == METHODmc:
             return self.MCtakeAction(cards)
-        elif self.method == METHODoptimalTable:
-            return self.optimalTable(cards,gym)
+        elif self.method == METHODoptimalTable or self.method == METHODcountCard:
+            return self.optimalTable(cards)
         elif self.method == METHODexternalQ:
             return self.MCtakeActionPreUploaded(cards)
         elif self.method == METHODarashCoded:
@@ -257,30 +236,30 @@ class Player:
         playerCards = cardsOnTable[1:]
         playerCardsSum = sum([self.points[_] for _ in playerCards])
 
-        if decision == 'hit':
+        if decision == HITstr:
             actionIndex = HIT 
-        elif decision == 'stay':
+        elif decision == STAYstr:
             actionIndex = STAY
-        elif decision == 'double':
+        elif decision == DOUBLEstr:
             actionIndex = DOUBLE
 
         if 'A' in playerCards:
-            if 'playerWon' in result:
+            if WIN in result: #! in includes doubles as well
                 resultIndex = 0 
-            elif 'playerLost' in result:
+            elif LOSS in result: #! in includes doubles as well
                 resultIndex = 1 
-            elif result == 'push':
+            elif result == PUSH:
                 resultIndex = 2
             else:
                 raise NameError("[player] invalid result")
             self.softTable[playerCardsSum-2][dealerCardValue-2][actionIndex][resultIndex] += 1 
 
         else: 
-            if 'playerWon' in result: #! considering double
+            if WIN in result: #! considering double
                 resultIndex = 0 
-            elif 'playerLost' in result: #! considering double
+            elif LOSS in result: #! considering double
                 resultIndex = 1 
-            elif result == 'push':
+            elif result == PUSH:
                 resultIndex = 2
             else:
                 raise NameError("[player] invalid result")
@@ -298,8 +277,8 @@ class Player:
         allRewards = []
         for i in range(len(gameTrack)):
             if gameTrack[i][2] == "handInProgress": allRewards.append(0)
-            elif gameTrack[i][2] == "playerLost": allRewards.append(-1)
-            elif gameTrack[i][2] == "playerWon": allRewards.append(1)
+            elif gameTrack[i][2] == LOSS: allRewards.append(-1)
+            elif gameTrack[i][2] == WIN: allRewards.append(1)
         allRewards = np.array(allRewards)
 
         for i in range(len(gameTrack)):
@@ -310,9 +289,9 @@ class Player:
                 palyerValue += self.points[state[j]]
             action = gameTrack[i][1]
 
-            if action == 'hit':
+            if action == HITstr:
                 action = HIT
-            elif action == 'stay':
+            elif action == STAYstr:
                 action = STAY
             rewards = allRewards[i:]
             discountRate = [self.gamma**k for k in range(1,len(rewards)+1)] # Create a list with the gamma rate increasing
@@ -345,9 +324,9 @@ class Player:
             
         action = np.random.choice(np.arange(2), p=probs)   
         if action == HIT:
-            return 'hit'
+            return HITstr
         elif action == STAY:
-            return 'stay'
+            return STAYstr
         else:
             raise NameError('[-] MC chose invlid action')
     
@@ -373,11 +352,28 @@ class Player:
             
         action = np.random.choice(np.arange(2), p=probs)   
         if action == HIT:
-            return 'hit'
+            return HITstr
         elif action == STAY:
-            return 'stay'
+            return STAYstr
         else:
             raise NameError('[-] MC chose invlid action')
+
+    def countCards(self , cardsDealt , numAllDealt):
+        for i in cardsDealt:
+            if self.points[i]>=2 and self.points[i]<=6:
+                self.runningCount += 1
+            elif self.points[i]>= 10 or self.points[i] == 1: #! == 1 is for the case of soft ace
+                self.runningCount -= 1
+
+        remainingDeck = self.totalDecks - numAllDealt//52         
+        self.trueCount = self.runningCount // remainingDeck 
+        betWeight = self.trueCount - 1 if self.trueCount >= 3 else 1
+        bet = self.betUnit * betWeight
+        return bet
+
+    def resetCounting(self):
+        self.trueCount = 0
+        self.runningCount = 0
 
     def MCuplaod(self,hardUrl,softUrl):
         self.MChardTableOnline = np.load(hardUrl)

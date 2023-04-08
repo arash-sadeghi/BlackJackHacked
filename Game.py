@@ -7,90 +7,90 @@ import os
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-
-METHODmc = 0
-METHODoptimalTable = 1
-METHODexternalQ = 2
-METHODarashCoded = 3
-
+from Constants import *
 def vizMoney(moneys):
     plt.plot(moneys)
 
     plt.grid()
-    plt.savefig(os.path.join('results','MyDealerWithBJcheck')+''+'.png')
+    plt.savefig(os.path.join(dir,'MyDealerWithBJcheck')+''+'.png')
     plt.show()
 
 def print2(inp,color='white',attrs=[]):
     # print(colored(inp,color,attrs=attrs))
-    logging.info(inp)
+    # logging.info(inp) #! no logging - increase running time from 2.7s to 23 s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+    pass
 
 if __name__ == '__main__':
-    method = METHODoptimalTable
+    method = METHODcountCard
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'cardCount'+f'method{method}'
+    comment = 'cardCountFixed'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.makedirs(dir, exist_ok=True)
     logging.basicConfig(filename=os.path.join(dir,'log.log'), level=logging.DEBUG)
-    points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now
-    player = Player(points,dir,method)
-    dealer = Dealer(points)
+    money = 100
+    bet = 1
+    initialMoney = money
+    dealer = Dealer(deckNum , deckPenetration)
+    player = Player(dir , method , bet , totalDecks=dealer.deckNum)
     wins = 0
     losses = 0
     pushes = 0
     numberOfGames = 100_000
-    # numberOfGames = 600
-    money = 100
-    initialMoney = money
-    bet = 1
     winPercentages = []
     lossPercentages = []
     pushPercentages = []
     MoneyRec = []
     wentBroke = False
     startTime = time()
+    cardsOnTable = []
     for gameIt in range(1,numberOfGames+1): #! just to avoid game number 0
-
-        if dealer.shoeChange:
-            print2("\n"+"<>"*20+"\n")
-            print2(f"changing shoe after dealing {len(dealer.dealtCards)}")
-            print2("\n"+"<>"*20+"\n")
-            dealer = Dealer(points)
-            
         print2("\n"+"-"*20+f" game {gameIt} "+"-"*20+"\n")
-        cardsOnTable = dealer.deal()
-        print2(f'[game] dealer hand {cardsOnTable[0]} ','cyan',attrs=['bold'])
-        print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
+        if dealer.shoeChange:
+            print2("\n"+"<>"*20+"\n"+f"changing shoe after dealing {len(dealer.dealtCards)}")
+            dealer = Dealer(deckNum , deckPenetration)
+            if method == METHODcountCard:
+                player.resetCounting()
+            
+        if method == METHODcountCard and gameIt>1:
+            bet = player.countCards(dealer.dealerHand+dealer.playerHand , len(dealer.dealtCards))
+            print2(f'[game] bet {bet} running count {player.runningCount} true count {player.trueCount} cards dealt {round((deckNum*52-len(dealer.cards)) / (deckNum*52) , 2)*100} %')
+            # if player.trueCount >= 5 and round((deckNum*52-len(dealer.cards)) / (deckNum*52) , 2)*100 >= 88:
+            #     print(len(dealer.cards) , round((deckNum*52-len(dealer.cards)) / (deckNum*52) , 2)*100 )
+            #     print(" lemme see")
+            #     # l = np.array([points[_] for _ in dealer.cards]) ; np.count_nonzero(l<=6);
 
+        dealer.endHand() 
+
+        cardsOnTable = dealer.deal()
+        print2(f'[game] dealer {cardsOnTable[0]} player {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
         BJres = dealer.checkPlayerBJ()
-        #! no result is given for player since it was pure luck of player
-        if  BJres == "playerWon":
+        if  BJres == WIN:
             print2("[game] Player BlackJack",'green')
             wins += 1
             money += bet * 3/2
-            dealer.endHand() 
             continue
-        elif BJres == "playerLost":
+        elif BJres == LOSS:
             print2("[game] Dealer BlackJack",'red')
             wins -= 1
             money -= bet 
-            dealer.endHand() 
             continue
-        elif BJres == "push":
+        elif BJres == PUSH:
             print2("[game] BlackJack pushed",'gray')
-            dealer.endHand() 
             continue
 
         SAR = []
         result = 'handInProgress'       
         while result == 'handInProgress':
-            print2("[game] handInProgress")
             cardsOnTable = [dealer.dealerHand[0]]
             cardsOnTable.extend(dealer.playerHand)
-            print2(f'[game] dealer hand {cardsOnTable[0]} ','cyan',attrs=['bold'])
-            print2(f'[game] player hand {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
+
+            print2(f'[game] dealer {cardsOnTable[0]} player {[_ for _ in cardsOnTable[1:]]} , sum {sum([points[_] for _ in cardsOnTable[1:]])}','light_green',attrs=['bold'])
+
             decision = player.decide(cardsOnTable)
+            
             print2(f'[game] decision {decision}')
+
             result = dealer.takeAction(decision) 
             SAR.append([cardsOnTable , decision , result])    
         player.record(cardsOnTable , decision , result)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
             player.learnMC(SAR)
         print2(f"[game] playerHand {dealer.playerHand}  {sum([ points[_] for _ in dealer.playerHand])} dealerHand {dealer.dealerHand} {sum([ points[_] for _ in dealer.dealerHand])}")
 
-        if result == 'playerLost': 
+        if result == LOSS: 
             color = "red"
             losses += 1 
             money -= bet
@@ -109,7 +109,7 @@ if __name__ == '__main__':
             money -= 2*bet
 
 
-        elif result == 'playerWon': 
+        elif result == WIN: 
             color = "green"
             wins += 1
             money += bet
@@ -119,18 +119,16 @@ if __name__ == '__main__':
             wins += 1
             money += 2*bet
 
-        elif result == 'push': 
+        elif result == PUSH: 
             color = "yellow"
             pushes += 1
         else:
             raise NameError('wrong result')
 
-        dealer.endHand()
-
         print2(f"[game] {result}",color)
         print2( f"STATS wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet}" , 'magenta' , attrs=["bold"])
 
-        if gameIt%500 == 0:
+        if gameIt%1000 == 0 and False:  #! no printing !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
             print( f"STATS game {gameIt} progress {round(gameIt/numberOfGames*100,2)} wins {wins} - {round(wins/gameIt*100,2)} |||| losses {losses} - {round(losses/gameIt*100,2)} |||| pushs {pushes} - {round(pushes/gameIt*100,2)} initial Money {initialMoney} money at the end {money} bet {bet} Broke {wentBroke}")
             if method == METHODexternalQ or method == METHODmc:
                 player.vizMC(gameIt) 

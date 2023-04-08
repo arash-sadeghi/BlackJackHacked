@@ -1,31 +1,23 @@
 import random
-# from gym.utils import seeding #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-import numpy as np
-import gym
+from Constants import *
 
 class Dealer:
-    def __init__(self,points,deck=8):
-        self.deck = deck
+    def __init__(self,deckNum=8,deckPenetration=0.5):
+        self.deckNum = deckNum
         self.cards = self.createCard() 
         self.points = points
-        # random.seed(100) #! DEBUG
         self.shuffleCards()
-        self.yellowPos = len(self.cards) // 2 #! approximate
+        self.yellowPos = int(len(self.cards) * (1-deckPenetration))
         self.dealtCards = []
         self.playerHand = []
         self.dealerHand = []
         self.shoeChange = False
-        
-        # self.env = gym.make('Blackjack-v1',sab=False,natural=True)
-        # self.env.np_random.__setstate__(np.random.default_rng(1).__getstate__());print("seeded") #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
     
     def createCard(self):
         oneDeck = [str(_) for _ in range(2,11)] #! 2 to 10
         oneDeck.extend(['J','Q','K','A']) #! shapes
         oneDeck *= 4 #! dimond club spade heart
-        oneDeck *= self.deck #! deck
+        oneDeck *= self.deckNum #! deck
         return oneDeck
 
     def shuffleCards(self):
