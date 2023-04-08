@@ -1,6 +1,6 @@
 # reuslt
 ## high low counting
-    - the more aggresive you get on betting when true count is high, the more money you earn. Otherwise your money will decay the same way it happens in normal blackjack
+- the more aggresive you get on betting when true count is high, the more money you earn. Otherwise your money will decay the same way it happens in normal blackjack
 
 # Alert
 
