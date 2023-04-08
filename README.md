@@ -1,4 +1,5 @@
 # situation
+
 - fixed some fatal errors and incorporated gym. everything works reliably. but for the future I need t make sure of sanity of code before I run experiments. this will save me a lot of time. all this debug nonsense was because of if statements aces and all those stuff. code slower save time for later and avouid wrong rushed resuls. However for now we know how blackjack works monte carlo and all other stuff related to it. now count cards, estimate win and loss, and implement spliting.
 # TODO
 - [x] implement soft A
