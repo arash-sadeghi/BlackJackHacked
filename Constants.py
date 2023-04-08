@@ -19,6 +19,6 @@ METHODarashCoded = 3
 METHODcountCard = 4
 
 deckNum = 2
-deckPenetration = 0.9
+deckPenetration = 0.91
 
 points = {'As': 1, 'A': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10} #! Ace is just 11 for now

@@ -1,3 +1,7 @@
+# Alert
+
+- becarefull of the case when bet is bigger than you money
+
 # Implementation Source Inspiration
 - (source)[https://www.youtube.com/watch?v=G_So72lFNIU]
 # situation

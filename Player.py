@@ -368,6 +368,7 @@ class Player:
         remainingDeck = self.totalDecks - numAllDealt//52         
         self.trueCount = self.runningCount // remainingDeck 
         betWeight = self.trueCount - 1 if self.trueCount >= 3 else 1
+        if betWeight > 1: betWeight *= 2 #! aggression experiment !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         bet = self.betUnit * betWeight
         return bet
 

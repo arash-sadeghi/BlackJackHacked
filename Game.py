@@ -23,7 +23,7 @@ def print2(inp,color='white',attrs=[]):
 if __name__ == '__main__':
     method = METHODcountCard
     logName = ctime(time()).replace(" ","_").replace(":","_")
-    comment = 'cardCountFixed'+f'method{method}'
+    comment = 'aggresiveCount'+f'method{method}'
     logName = comment + logName
     dir = os.path.join('logs',logName)
     os.makedirs(dir, exist_ok=True)
